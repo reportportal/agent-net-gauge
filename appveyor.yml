@@ -10,7 +10,7 @@ environment:
     - runtime: linux-x86
 
 before_build:
-- ps: >-
+- ps: |
     $pathToJson = "ReportPortal.Gauge/plugin.json"
     $a = Get-Content $pathToJson | ConvertFrom-Json
     $a.version = "%APPVEYOR_BUILD_VERSION%"
