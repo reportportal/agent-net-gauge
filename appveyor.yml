@@ -10,14 +10,14 @@ environment:
     - runtime: linux-x86
 
 before_build:
-  - ps: >-
+- ps: >-
     $pathToJson = "ReportPortal.Gauge/plugin.json"
     $a = Get-Content $pathToJson | ConvertFrom-Json
     $a.version = "%APPVEYOR_BUILD_VERSION%"
     $a | ConvertTo-Json | set-content $pathToJson
 
 build_script:
-  - cmd: >-
+- cmd: >-
     dotnet publish -c %configuration% -r %runtime%
 
     7z a reportportal-%APPVEYOR_BUILD_VERSION%-%runtime%.zip ./ReportPortal.Gauge/bin/%configuration%/netcoreapp2.1/%runtime%/publish/*
