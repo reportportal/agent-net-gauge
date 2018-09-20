@@ -7,7 +7,8 @@ configuration: Release
 environment:
   matrix:
     - runtime: win-x86
-    - runtime: linux-x86
+    - runtime: win-x64
+    - runtime: linux-x64
 
 before_build:
 - ps: |
