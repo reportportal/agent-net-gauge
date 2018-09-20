@@ -9,6 +9,11 @@ environment:
     - runtime: win-x86
     - runtime: linux-x86
 
+dotnet_csproj:
+  patch: true
+  file: '**\plugin.json'
+  version: '$(appveyor_build_version)'
+
 build_script:
 - cmd: >-
     dotnet publish -c %configuration% -r %runtime%

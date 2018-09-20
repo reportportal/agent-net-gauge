@@ -1,21 +1,21 @@
 {
-	"id": "reportportal",
-	"version": "1.0.0",
-	"name": "ReportPortal",
-	"description": "Send spec results to Report Protal",
-	"install": {
-        "windows": [],
-        "linux": [],
-        "darwin": []
-    },
-	"command" : {
-        "windows" : ["ReportPortal.Gauge.exe"],
-        "linux" : [""],
-        "darwin" : [""]
-    },
-    "scope" : ["Execution"],
-	"gaugeVersionSupport": {
-		"minimum": "1.0.0",
-		"maximum": ""
-	}
+  "id": "reportportal",
+  "version": "1.0.0",
+  "name": "ReportPortal",
+  "description": "Send spec results to Report Protal",
+  "install": {
+    "windows": [],
+    "linux": [],
+    "darwin": []
+  },
+  "command": {
+    "windows": [ "ReportPortal.Gauge.exe" ],
+    "linux": [ "" ],
+    "darwin": [ "" ]
+  },
+  "scope": [ "Execution" ],
+  "gaugeVersionSupport": {
+    "minimum": "1.0.0",
+    "maximum": ""
+  }
 }
