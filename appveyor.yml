@@ -4,9 +4,10 @@ image: Visual Studio 2017
 
 configuration: Release
 
-matrix:
-  - runtime: win-x86
-  - runtime: linux-x86
+environment:
+  matrix:
+    - runtime: win-x86
+    - runtime: linux-x86
 
 build_script:
 - cmd: >-
