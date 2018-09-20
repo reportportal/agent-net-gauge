@@ -9,7 +9,7 @@
         "darwin": []
     },
 	"command" : {
-        "windows" : ["bin/ReportPortal.Gauge.exe"],
+        "windows" : ["ReportPortal.Gauge.exe"],
         "linux" : [""],
         "darwin" : [""]
     },
