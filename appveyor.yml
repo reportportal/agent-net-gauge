@@ -2,11 +2,16 @@ version: 1.0.{build}
 
 image: Visual Studio 2017
 
+configuration: Release
+
+matrix:
+  - runtime: win-x86
+  - runtime: linux-x86
+
 build_script:
 - cmd: >-
-    dotnet publish -r win-x86
-    
-    7z a reportportal-%VERSION%-win-x86.zip ./ReportPortal.Gauge/bin/Debug/netcoreapp2.1/win-x86/publish/*
+    dotnet publish -c %configuration% -r %runtime%
 
+    7z a reportportal-%APPVEYOR_BUILD_VERSION%-%runtime%.zip ./ReportPortal.Gauge/bin/Debug/netcoreapp2.1/%runtime%/publish/*
 artifacts:
 - path: '**/.zip'
