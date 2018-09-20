@@ -13,6 +13,6 @@ build_script:
 - cmd: >-
     dotnet publish -c %configuration% -r %runtime%
 
-    7z a reportportal-%APPVEYOR_BUILD_VERSION%-%runtime%.zip ./ReportPortal.Gauge/bin/Debug/netcoreapp2.1/%runtime%/publish/*
+    7z a reportportal-%APPVEYOR_BUILD_VERSION%-%runtime%.zip ./ReportPortal.Gauge/bin/%configuration%/netcoreapp2.1/%runtime%/publish/*
 artifacts:
 - path: '**/.zip'
