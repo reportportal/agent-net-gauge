@@ -13,7 +13,7 @@ before_build:
 - ps: |
     $pathToJson = "ReportPortal.Gauge/plugin.json"
     $a = Get-Content $pathToJson | ConvertFrom-Json
-    $a.version = "%APPVEYOR_BUILD_VERSION%"
+    $a.version = "$env:APPVEYOR_BUILD_VERSION"
     $a | ConvertTo-Json | set-content $pathToJson
 
 build_script:
