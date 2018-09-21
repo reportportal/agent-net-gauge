@@ -5,13 +5,13 @@
   "description": "Send spec results to Report Portal",
   "install": {
     "windows": [],
-    "linux": [],
-    "darwin": []
+    "linux": ["chmod +x ReportPortal.Gauge.dll"],
+    "darwin": ["chmod +x ReportPortal.Gauge.dll"]
   },
   "command": {
     "windows": [ "ReportPortal.Gauge.exe" ],
-    "linux": [ "ReportPortal.Gauge.dll" ],
-    "darwin": [ "ReportPortal.Gauge.dll" ]
+    "linux": [ "./ReportPortal.Gauge.dll" ],
+    "darwin": [ "./ReportPortal.Gauge.dll" ]
   },
   "scope": [ "Execution" ],
   "gaugeVersionSupport": {
