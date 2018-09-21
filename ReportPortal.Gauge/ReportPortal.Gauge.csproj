@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Gauge.CSharp.Core" Version="0.3.4" />
+    <PackageReference Include="ReportPortal.Shared" Version="2.0.5" />
   </ItemGroup>
 
   <ItemGroup>

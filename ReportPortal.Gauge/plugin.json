@@ -10,8 +10,8 @@
   },
   "command": {
     "windows": [ "ReportPortal.Gauge.exe" ],
-    "linux": [ "" ],
-    "darwin": [ "" ]
+    "linux": [ "ReportPortal.Gauge.dll" ],
+    "darwin": [ "ReportPortal.Gauge.dll" ]
   },
   "scope": [ "Execution" ],
   "gaugeVersionSupport": {
