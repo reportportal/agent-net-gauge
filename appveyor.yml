@@ -1,6 +1,7 @@
-version: 1.0.{build}
-
 image: Visual Studio 2017 Preview
+
+install:
+  - ps: gitversion /l console /output buildserver
 
 configuration: Release
 
@@ -10,18 +11,15 @@ environment:
     - runtime: win-x64
     - runtime: linux-x64
 
-before_build:
-- ps: |
-    $pathToJson = "ReportPortal.Gauge/plugin.json"
-    $a = Get-Content $pathToJson | ConvertFrom-Json
-    $a.version = "$env:APPVEYOR_BUILD_VERSION"
-    $a | ConvertTo-Json | set-content $pathToJson
+dotnet_csproj:
+  patch: true
+  version: '$(GitVersion_SemVer)'
 
 build_script:
 - cmd: >-
     dotnet publish -c %configuration% -r %runtime%
 
-    7z a reportportal-%APPVEYOR_BUILD_VERSION%-%runtime%.zip ./ReportPortal.Gauge/bin/%configuration%/netcoreapp2.1/%runtime%/publish/*
+    7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./ReportPortal.Gauge/bin/%configuration%/netcoreapp2.1/%runtime%/publish/*
 
 artifacts:
   - path: '**/.zip'
