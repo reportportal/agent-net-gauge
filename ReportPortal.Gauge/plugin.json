@@ -1,17 +1,17 @@
 {
   "id": "reportportal",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "ReportPortal",
   "description": "Send spec results to Report Portal",
-  "install": {
+  "PostInstall": {
     "windows": [],
-    "linux": ["chmod +x ReportPortal.Gauge.dll"],
-    "darwin": ["chmod +x ReportPortal.Gauge.dll"]
+    "linux": ["chmod", "+x", "ReportPortal.Gauge"],
+    "darwin": ["chmod", "+x", "ReportPortal.Gauge"]
   },
   "command": {
     "windows": [ "ReportPortal.Gauge.exe" ],
-    "linux": [ "./ReportPortal.Gauge.dll" ],
-    "darwin": [ "./ReportPortal.Gauge.dll" ]
+    "linux": [ "./ReportPortal.Gauge" ],
+    "darwin": [ "./ReportPortal.Gauge" ]
   },
   "scope": [ "Execution" ],
   "gaugeVersionSupport": {
