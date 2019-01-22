@@ -1,8 +1,10 @@
 # Installation
 
-## Offline installation
-Download plugin from [releases](https://github.com/reportportal/agent-net-gauge/releases)
+> gauge install reportportal
 
+Or manually download plugin from [releases](https://github.com/reportportal/agent-net-gauge/releases)
+
+And then:
 > gauge install reportportal --file <path_to_plugin_zip_file>
 
 # Configuration
