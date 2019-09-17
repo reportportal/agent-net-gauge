@@ -2,6 +2,8 @@
 using Gauge.Messages;
 using ReportPortal.Client;
 using ReportPortal.Shared;
+using ReportPortal.Shared.Configuration;
+using ReportPortal.Shared.Configuration.Providers;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,8 @@ namespace ReportPortal.Gauge
     {
         private static Dictionary<ExecutionStatus, Client.Models.Status> _statusMap;
 
+        private static IConfiguration Config;
+
         static Program()
         {
             _statusMap = new Dictionary<ExecutionStatus, Client.Models.Status>
@@ -23,15 +27,23 @@ namespace ReportPortal.Gauge
                 { ExecutionStatus.Passed, Client.Models.Status.Passed },
                 { ExecutionStatus.Skipped, Client.Models.Status.Skipped }
             };
+
+            var configPrefix = "RP_";
+            var configDelimeter = "_";
+            Config = new ConfigurationBuilder()
+                .Add(new EnvironmentVariablesConfigurationProvider(configPrefix, configDelimeter, EnvironmentVariableTarget.Process))
+                .Add(new EnvironmentVariablesConfigurationProvider(configPrefix, configDelimeter, EnvironmentVariableTarget.User))
+                .Add(new EnvironmentVariablesConfigurationProvider(configPrefix, configDelimeter, EnvironmentVariableTarget.Machine))
+                .Build();
         }
 
         static void Main(string[] args)
         {
             var port = Convert.ToInt32(Environment.GetEnvironmentVariable("plugin_connection_port"));
 
-            var rpUri = new Uri(ReadEnvVariable("rp_uri"));
-            var rpProject = ReadEnvVariable("rp_project");
-            var rpUuid = ReadEnvVariable("rp_uuid");
+            var rpUri = new Uri(Config.GetValue<string>("Uri"));
+            var rpProject = Config.GetValue<string>("Project");
+            var rpUuid = Config.GetValue<string>("Uuid");
 
             var service = new Service(rpUri, rpProject, rpUuid);
             var launchReporter = new LaunchReporter(service);
@@ -49,10 +61,11 @@ namespace ReportPortal.Gauge
                         var launchStartDateTime = DateTime.UtcNow.AddMilliseconds(-suiteExecutionResult.ExecutionTime);
                         launchReporter.Start(new Client.Requests.StartLaunchRequest
                         {
-                            Name = suiteExecutionResult.ProjectName,
-                            Tags = suiteExecutionResult.Tags.Select(t => t.ToString()).ToList(),
+                            Name = Config.GetValue("Launch:Name", suiteExecutionResult.ProjectName),
+                            Description = Config.GetValue("Launch:Description", string.Empty),
+                            Tags = Config.GetValues("Launch:Tags", new List<string>()).ToList(),
                             StartTime = launchStartDateTime
-                        });
+                        }); ;
 
                         foreach (var specResult in suiteExecutionResult.SpecResults)
                         {
