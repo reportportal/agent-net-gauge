@@ -86,7 +86,6 @@ namespace ReportPortal.Gauge
                                     Time = DateTime.UtcNow,
                                     Attach = new Client.Models.Attach("Spec", "application/json", System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(specResult)))
                                 });
-                                // internal log
                                 scenarioReporter.Log(new Client.Requests.AddLogItemRequest
                                 {
                                     Text = "Scenario Result Proto",
@@ -94,7 +93,7 @@ namespace ReportPortal.Gauge
                                     Time = DateTime.UtcNow,
                                     Attach = new Client.Models.Attach("Scenario", "application/json", System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(scenarioResult)))
                                 });
-
+                                //
 
                                 foreach (var scenarioContext in scenarioResult.Scenario.Contexts)
                                 {
@@ -106,16 +105,31 @@ namespace ReportPortal.Gauge
                                     });
                                 }
 
+                                var lastStepStartTime = scenarioStartTime;
                                 foreach (var stepResult in scenarioResult.Scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Step))
                                 {
                                     var text = stepResult.Step.ActualText;
+                                    var stepLogLevel = stepResult.Step.StepExecutionResult.ExecutionResult.Failed ? Client.Models.LogLevel.Error : Client.Models.LogLevel.Info;
 
                                     scenarioReporter.Log(new Client.Requests.AddLogItemRequest
                                     {
-                                        Level = Client.Models.LogLevel.Info,
-                                        Time = DateTime.UtcNow,
+                                        Level = stepLogLevel,
+                                        Time = lastStepStartTime,
                                         Text = text
                                     });
+
+                                    // report error message
+                                    if (!string.IsNullOrEmpty(stepResult.Step.StepExecutionResult.ExecutionResult.ErrorMessage))
+                                    {
+                                        scenarioReporter.Log(new Client.Requests.AddLogItemRequest
+                                        {
+                                            Level = Client.Models.LogLevel.Error,
+                                            Time = lastStepStartTime,
+                                            Text = $"{stepResult.Step.StepExecutionResult.ExecutionResult.ErrorMessage}{Environment.NewLine}{stepResult.Step.StepExecutionResult.ExecutionResult.StackTrace}"
+                                        });
+                                    }
+
+                                    lastStepStartTime = lastStepStartTime.AddMilliseconds(stepResult.Step.StepExecutionResult.ExecutionResult.ExecutionTime);
                                 }
 
                                 scenarioReporter.Finish(new Client.Requests.FinishTestItemRequest
