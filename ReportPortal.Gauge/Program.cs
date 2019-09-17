@@ -108,8 +108,26 @@ namespace ReportPortal.Gauge
                                 var lastStepStartTime = scenarioStartTime;
                                 foreach (var stepResult in scenarioResult.Scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Step))
                                 {
-                                    var text = stepResult.Step.ActualText;
+                                    var text = "!!!MARKDOWN_MODE!!!" + stepResult.Step.ActualText;
                                     var stepLogLevel = stepResult.Step.StepExecutionResult.ExecutionResult.Failed ? Client.Models.LogLevel.Error : Client.Models.LogLevel.Info;
+
+                                    // if step argument is table
+                                    var tableParameter = stepResult.Step.Fragments.FirstOrDefault(f => f.Parameter?.Table != null)?.Parameter.Table;
+                                    if (tableParameter != null)
+                                    {
+                                        text += Environment.NewLine + Environment.NewLine + "| " + string.Join(" | ", tableParameter.Headers.Cells.ToArray()) + " |";
+                                        text += Environment.NewLine + "| " + string.Join(" | ", tableParameter.Headers.Cells.Select(c => "---")) + " |";
+
+                                        foreach (var tableRow in tableParameter.Rows)
+                                        {
+                                            text += Environment.NewLine + "| " + string.Join(" | ", tableRow.Cells.ToArray()) + " |";
+                                        }
+                                    }
+
+                                    if (stepResult.Step.StepExecutionResult.ExecutionResult.Failed)
+                                    {
+                                        text += $"{Environment.NewLine}{Environment.NewLine}{stepResult.Step.StepExecutionResult.ExecutionResult.ErrorMessage}{Environment.NewLine}{stepResult.Step.StepExecutionResult.ExecutionResult.StackTrace}";
+                                    }
 
                                     scenarioReporter.Log(new Client.Requests.AddLogItemRequest
                                     {
@@ -117,17 +135,6 @@ namespace ReportPortal.Gauge
                                         Time = lastStepStartTime,
                                         Text = text
                                     });
-
-                                    // report error message
-                                    if (!string.IsNullOrEmpty(stepResult.Step.StepExecutionResult.ExecutionResult.ErrorMessage))
-                                    {
-                                        scenarioReporter.Log(new Client.Requests.AddLogItemRequest
-                                        {
-                                            Level = Client.Models.LogLevel.Error,
-                                            Time = lastStepStartTime,
-                                            Text = $"{stepResult.Step.StepExecutionResult.ExecutionResult.ErrorMessage}{Environment.NewLine}{stepResult.Step.StepExecutionResult.ExecutionResult.StackTrace}"
-                                        });
-                                    }
 
                                     if (stepResult.Step.StepExecutionResult.ExecutionResult.ScreenShot?.Length != 0)
                                     {
