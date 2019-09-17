@@ -129,6 +129,17 @@ namespace ReportPortal.Gauge
                                         });
                                     }
 
+                                    if (stepResult.Step.StepExecutionResult.ExecutionResult.ScreenShot?.Length != 0)
+                                    {
+                                        scenarioReporter.Log(new Client.Requests.AddLogItemRequest
+                                        {
+                                            Level = Client.Models.LogLevel.Debug,
+                                            Time = lastStepStartTime,
+                                            Text = "Screenshot",
+                                            Attach = new Client.Models.Attach("Screenshot", "image/png", stepResult.Step.StepExecutionResult.ExecutionResult.ScreenShot.ToByteArray())
+                                        });
+                                    }
+
                                     lastStepStartTime = lastStepStartTime.AddMilliseconds(stepResult.Step.StepExecutionResult.ExecutionResult.ExecutionTime);
                                 }
 
