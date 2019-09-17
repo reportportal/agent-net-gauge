@@ -91,22 +91,24 @@ namespace ReportPortal.Gauge
                                     Tags = scenarioResult.Scenario.Tags.Select(t => t.ToString()).ToList()
                                 });
 
-                                // internal log
-                                scenarioReporter.Log(new Client.Requests.AddLogItemRequest
+                                // internal log ("log_enabled" property)
+                                if (Config.GetValue("log:enabled", false))
                                 {
-                                    Text = "Spec Result Proto",
-                                    Level = Client.Models.LogLevel.Trace,
-                                    Time = DateTime.UtcNow,
-                                    Attach = new Client.Models.Attach("Spec", "application/json", System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(specResult)))
-                                });
-                                scenarioReporter.Log(new Client.Requests.AddLogItemRequest
-                                {
-                                    Text = "Scenario Result Proto",
-                                    Level = Client.Models.LogLevel.Trace,
-                                    Time = DateTime.UtcNow,
-                                    Attach = new Client.Models.Attach("Scenario", "application/json", System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(scenarioResult)))
-                                });
-                                //
+                                    scenarioReporter.Log(new Client.Requests.AddLogItemRequest
+                                    {
+                                        Text = "Spec Result Proto",
+                                        Level = Client.Models.LogLevel.Trace,
+                                        Time = DateTime.UtcNow,
+                                        Attach = new Client.Models.Attach("Spec", "application/json", System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(specResult)))
+                                    });
+                                    scenarioReporter.Log(new Client.Requests.AddLogItemRequest
+                                    {
+                                        Text = "Scenario Result Proto",
+                                        Level = Client.Models.LogLevel.Trace,
+                                        Time = DateTime.UtcNow,
+                                        Attach = new Client.Models.Attach("Scenario", "application/json", System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(scenarioResult)))
+                                    });
+                                }
 
                                 foreach (var scenarioContext in scenarioResult.Scenario.Contexts)
                                 {
