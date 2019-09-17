@@ -157,9 +157,10 @@ namespace ReportPortal.Gauge
                                 });
                             }
 
+                            var specFinishStatus = specResult.Failed ? Client.Models.Status.Failed : Client.Models.Status.Passed;
                             specReporter.Finish(new Client.Requests.FinishTestItemRequest
                             {
-                                Status = Client.Models.Status.Passed,
+                                Status = specFinishStatus,
                                 EndTime = specStartTime.AddMilliseconds(specResult.ExecutionTime)
                             });
                         }
