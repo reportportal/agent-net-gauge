@@ -2,6 +2,7 @@
 using Gauge.Messages;
 using ReportPortal.Client;
 using ReportPortal.Shared;
+using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,36 +46,57 @@ namespace ReportPortal.Gauge
                     {
                         var suiteExecutionResult = message.SuiteExecutionResult.SuiteResult;
 
+                        var launchStartDateTime = DateTime.UtcNow.AddMilliseconds(-suiteExecutionResult.ExecutionTime);
                         launchReporter.Start(new Client.Requests.StartLaunchRequest
                         {
                             Name = suiteExecutionResult.ProjectName,
                             Tags = suiteExecutionResult.Tags.Select(t => t.ToString()).ToList(),
-                            StartTime = DateTime.UtcNow
+                            StartTime = launchStartDateTime
                         });
 
                         foreach (var specResult in suiteExecutionResult.SpecResults)
                         {
-                            var specReporter = launchReporter.StartNewTestNode(new Client.Requests.StartTestItemRequest
+                            var specStartTime = launchStartDateTime;
+                            var specReporter = launchReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                             {
                                 Type = Client.Models.TestItemType.Suite,
                                 Name = specResult.ProtoSpec.SpecHeading,
                                 Description = string.Join("", specResult.ProtoSpec.Items.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
-                                StartTime = DateTime.UtcNow,
+                                StartTime = specStartTime,
                                 Tags = specResult.ProtoSpec.Tags.Select(t => t.ToString()).ToList()
                             });
 
                             foreach (var scenarioResult in specResult.ProtoSpec.Items.Where(i => i.ItemType == ProtoItem.Types.ItemType.Scenario))
                             {
-                                var scenarioReporter = specReporter.StartNewTestNode(new Client.Requests.StartTestItemRequest
+                                var scenarioStartTime = specStartTime;
+                                var scenarioReporter = specReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                                 {
                                     Type = Client.Models.TestItemType.Step,
-                                    StartTime = DateTime.UtcNow,
+                                    StartTime = scenarioStartTime,
                                     Name = scenarioResult.Scenario.ScenarioHeading,
                                     Description = string.Join("", scenarioResult.Scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
                                     Tags = scenarioResult.Scenario.Tags.Select(t => t.ToString()).ToList()
                                 });
 
-                                foreach(var scenarioContext in scenarioResult.Scenario.Contexts)
+                                // internal log
+                                scenarioReporter.Log(new Client.Requests.AddLogItemRequest
+                                {
+                                    Text = "Spec Result Proto",
+                                    Level = Client.Models.LogLevel.Trace,
+                                    Time = DateTime.UtcNow,
+                                    Attach = new Client.Models.Attach("Spec", "application/json", System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(specResult)))
+                                });
+                                // internal log
+                                scenarioReporter.Log(new Client.Requests.AddLogItemRequest
+                                {
+                                    Text = "Scenario Result Proto",
+                                    Level = Client.Models.LogLevel.Trace,
+                                    Time = DateTime.UtcNow,
+                                    Attach = new Client.Models.Attach("Scenario", "application/json", System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(scenarioResult)))
+                                });
+
+
+                                foreach (var scenarioContext in scenarioResult.Scenario.Contexts)
                                 {
                                     scenarioReporter.Log(new Client.Requests.AddLogItemRequest
                                     {
@@ -98,7 +120,7 @@ namespace ReportPortal.Gauge
 
                                 scenarioReporter.Finish(new Client.Requests.FinishTestItemRequest
                                 {
-                                    EndTime = DateTime.UtcNow,
+                                    EndTime = scenarioStartTime.AddMilliseconds(scenarioResult.Scenario.ExecutionTime),
                                     Status = _statusMap[scenarioResult.Scenario.ExecutionStatus]
                                 });
                             }
@@ -106,7 +128,7 @@ namespace ReportPortal.Gauge
                             specReporter.Finish(new Client.Requests.FinishTestItemRequest
                             {
                                 Status = Client.Models.Status.Passed,
-                                EndTime = DateTime.UtcNow
+                                EndTime = specStartTime.AddMilliseconds(specResult.ExecutionTime)
                             });
                         }
 
