@@ -91,7 +91,7 @@ namespace ReportPortal.Gauge
                                     Tags = scenarioResult.Scenario.Tags.Select(t => t.ToString()).ToList()
                                 });
 
-                                // internal log ("log_enabled" property)
+                                // internal log ("rp_log_enabled" property)
                                 if (Config.GetValue("log:enabled", false))
                                 {
                                     scenarioReporter.Log(new Client.Requests.AddLogItemRequest

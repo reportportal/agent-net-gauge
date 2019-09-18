@@ -1,8 +1,8 @@
 {
   "id": "reportportal",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "name": "ReportPortal",
-  "description": "Send spec results to Report Portal",
+  "description": "Sends specification execution results to http://ReportPortal.io",
   "PostInstall": {
     "windows": [],
     "linux": ["chmod", "+x", "ReportPortal.Gauge"],
