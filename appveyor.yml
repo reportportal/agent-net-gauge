@@ -14,7 +14,7 @@ environment:
 
 dotnet_csproj:
   patch: true
-  version: '$(GitVersion_SemVer)'
+  version: '$(GitVersion_MajorMinorPatch)'
 
 build_script:
 - cmd: >-
