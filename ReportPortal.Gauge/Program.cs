@@ -65,7 +65,7 @@ namespace ReportPortal.Gauge
                             Description = Config.GetValue("Launch:Description", string.Empty),
                             Tags = Config.GetValues("Launch:Tags", new List<string>()).ToList(),
                             StartTime = launchStartDateTime
-                        }); ;
+                        });
 
                         foreach (var specResult in suiteExecutionResult.SpecResults)
                         {
@@ -79,16 +79,31 @@ namespace ReportPortal.Gauge
                                 Tags = specResult.ProtoSpec.Tags.Select(t => t.ToString()).ToList()
                             });
 
-                            foreach (var scenarioResult in specResult.ProtoSpec.Items.Where(i => i.ItemType == ProtoItem.Types.ItemType.Scenario))
+                            foreach (var scenarioResult in specResult.ProtoSpec.Items.Where(i => i.ItemType == ProtoItem.Types.ItemType.Scenario || i.ItemType == ProtoItem.Types.ItemType.TableDrivenScenario))
                             {
+                                ProtoScenario scenario;
+
+                                switch (scenarioResult.ItemType)
+                                {
+                                    case ProtoItem.Types.ItemType.Scenario:
+                                        scenario = scenarioResult.Scenario;
+                                        break;
+                                    case ProtoItem.Types.ItemType.TableDrivenScenario:
+                                        scenario = scenarioResult.TableDrivenScenario.Scenario;
+                                        break;
+                                    default:
+                                        scenario = scenarioResult.Scenario;
+                                        break;
+                                }
+
                                 var scenarioStartTime = specStartTime;
                                 var scenarioReporter = specReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                                 {
                                     Type = Client.Models.TestItemType.Step,
                                     StartTime = scenarioStartTime,
-                                    Name = scenarioResult.Scenario.ScenarioHeading,
-                                    Description = string.Join("", scenarioResult.Scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
-                                    Tags = scenarioResult.Scenario.Tags.Select(t => t.ToString()).ToList()
+                                    Name = scenario.ScenarioHeading,
+                                    Description = string.Join("", scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
+                                    Tags = scenario.Tags.Select(t => t.ToString()).ToList()
                                 });
 
                                 // internal log ("rp_log_enabled" property)
@@ -110,18 +125,10 @@ namespace ReportPortal.Gauge
                                     });
                                 }
 
-                                foreach (var scenarioContext in scenarioResult.Scenario.Contexts)
-                                {
-                                    scenarioReporter.Log(new Client.Requests.AddLogItemRequest
-                                    {
-                                        Level = Client.Models.LogLevel.Info,
-                                        Time = DateTime.UtcNow,
-                                        Text = scenarioContext.Step.ActualText
-                                    });
-                                }
+
 
                                 var lastStepStartTime = scenarioStartTime;
-                                foreach (var stepResult in scenarioResult.Scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Step))
+                                foreach (var stepResult in scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Step))
                                 {
                                     var text = "!!!MARKDOWN_MODE!!!" + stepResult.Step.ActualText;
                                     var stepLogLevel = stepResult.Step.StepExecutionResult.ExecutionResult.Failed ? Client.Models.LogLevel.Error : Client.Models.LogLevel.Info;
@@ -136,6 +143,18 @@ namespace ReportPortal.Gauge
                                         foreach (var tableRow in tableParameter.Rows)
                                         {
                                             text += Environment.NewLine + "| " + string.Join(" | ", tableRow.Cells.ToArray()) + " |";
+                                        }
+                                    }
+
+                                    // if dynamic arguments
+                                    var dynamicParameteres = stepResult.Step.Fragments.Where(f => f.FragmentType == Fragment.Types.FragmentType.Parameter && f.Parameter.ParameterType == Parameter.Types.ParameterType.Dynamic).Select(f => f.Parameter);
+                                    if (dynamicParameteres.Count() != 0)
+                                    {
+                                        text += Environment.NewLine;
+
+                                        foreach (var dynamicParameter in dynamicParameteres)
+                                        {
+                                            text += $"{Environment.NewLine}{dynamicParameter.Name}: {dynamicParameter.Value}";
                                         }
                                     }
 
@@ -167,8 +186,8 @@ namespace ReportPortal.Gauge
 
                                 scenarioReporter.Finish(new Client.Requests.FinishTestItemRequest
                                 {
-                                    EndTime = scenarioStartTime.AddMilliseconds(scenarioResult.Scenario.ExecutionTime),
-                                    Status = _statusMap[scenarioResult.Scenario.ExecutionStatus]
+                                    EndTime = scenarioStartTime.AddMilliseconds(scenario.ExecutionTime),
+                                    Status = _statusMap[scenario.ExecutionStatus]
                                 });
                             }
 
