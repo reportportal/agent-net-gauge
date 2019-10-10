@@ -125,63 +125,64 @@ namespace ReportPortal.Gauge
                                     });
                                 }
 
-
-
                                 var lastStepStartTime = scenarioStartTime;
-                                foreach (var stepResult in scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Step))
+                                if (scenario.ScenarioItems != null)
                                 {
-                                    var text = "!!!MARKDOWN_MODE!!!" + stepResult.Step.ActualText;
-                                    var stepLogLevel = stepResult.Step.StepExecutionResult.ExecutionResult.Failed ? Client.Models.LogLevel.Error : Client.Models.LogLevel.Info;
-
-                                    // if step argument is table
-                                    var tableParameter = stepResult.Step.Fragments.FirstOrDefault(f => f.Parameter?.Table != null)?.Parameter.Table;
-                                    if (tableParameter != null)
+                                    foreach (var stepResult in scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Step))
                                     {
-                                        text += Environment.NewLine + Environment.NewLine + "| " + string.Join(" | ", tableParameter.Headers.Cells.ToArray()) + " |";
-                                        text += Environment.NewLine + "| " + string.Join(" | ", tableParameter.Headers.Cells.Select(c => "---")) + " |";
+                                        var text = "!!!MARKDOWN_MODE!!!" + stepResult.Step.ActualText;
+                                        var stepLogLevel = stepResult.Step.StepExecutionResult.ExecutionResult.Failed ? Client.Models.LogLevel.Error : Client.Models.LogLevel.Info;
 
-                                        foreach (var tableRow in tableParameter.Rows)
+                                        // if step argument is table
+                                        var tableParameter = stepResult.Step.Fragments.FirstOrDefault(f => f.Parameter?.Table != null)?.Parameter.Table;
+                                        if (tableParameter != null)
                                         {
-                                            text += Environment.NewLine + "| " + string.Join(" | ", tableRow.Cells.ToArray()) + " |";
+                                            text += Environment.NewLine + Environment.NewLine + "| " + string.Join(" | ", tableParameter.Headers.Cells.ToArray()) + " |";
+                                            text += Environment.NewLine + "| " + string.Join(" | ", tableParameter.Headers.Cells.Select(c => "---")) + " |";
+
+                                            foreach (var tableRow in tableParameter.Rows)
+                                            {
+                                                text += Environment.NewLine + "| " + string.Join(" | ", tableRow.Cells.ToArray()) + " |";
+                                            }
                                         }
-                                    }
 
-                                    // if dynamic arguments
-                                    var dynamicParameteres = stepResult.Step.Fragments.Where(f => f.FragmentType == Fragment.Types.FragmentType.Parameter && f.Parameter.ParameterType == Parameter.Types.ParameterType.Dynamic).Select(f => f.Parameter);
-                                    if (dynamicParameteres.Count() != 0)
-                                    {
-                                        text += Environment.NewLine;
-
-                                        foreach (var dynamicParameter in dynamicParameteres)
+                                        // if dynamic arguments
+                                        var dynamicParameteres = stepResult.Step.Fragments.Where(f => f.FragmentType == Fragment.Types.FragmentType.Parameter && f.Parameter.ParameterType == Parameter.Types.ParameterType.Dynamic).Select(f => f.Parameter);
+                                        if (dynamicParameteres.Count() != 0)
                                         {
-                                            text += $"{Environment.NewLine}{dynamicParameter.Name}: {dynamicParameter.Value}";
+                                            text += Environment.NewLine;
+
+                                            foreach (var dynamicParameter in dynamicParameteres)
+                                            {
+                                                text += $"{Environment.NewLine}{dynamicParameter.Name}: {dynamicParameter.Value}";
+                                            }
                                         }
-                                    }
 
-                                    if (stepResult.Step.StepExecutionResult.ExecutionResult.Failed)
-                                    {
-                                        text += $"{Environment.NewLine}{Environment.NewLine}{stepResult.Step.StepExecutionResult.ExecutionResult.ErrorMessage}{Environment.NewLine}{stepResult.Step.StepExecutionResult.ExecutionResult.StackTrace}";
-                                    }
+                                        if (stepResult.Step.StepExecutionResult.ExecutionResult.Failed)
+                                        {
+                                            text += $"{Environment.NewLine}{Environment.NewLine}{stepResult.Step.StepExecutionResult.ExecutionResult.ErrorMessage}{Environment.NewLine}{stepResult.Step.StepExecutionResult.ExecutionResult.StackTrace}";
+                                        }
 
-                                    scenarioReporter.Log(new Client.Requests.AddLogItemRequest
-                                    {
-                                        Level = stepLogLevel,
-                                        Time = lastStepStartTime,
-                                        Text = text
-                                    });
-
-                                    if (stepResult.Step.StepExecutionResult.ExecutionResult.ScreenShot?.Length != 0)
-                                    {
                                         scenarioReporter.Log(new Client.Requests.AddLogItemRequest
                                         {
-                                            Level = Client.Models.LogLevel.Debug,
+                                            Level = stepLogLevel,
                                             Time = lastStepStartTime,
-                                            Text = "Screenshot",
-                                            Attach = new Client.Models.Attach("Screenshot", "image/png", stepResult.Step.StepExecutionResult.ExecutionResult.ScreenShot.ToByteArray())
+                                            Text = text
                                         });
-                                    }
 
-                                    lastStepStartTime = lastStepStartTime.AddMilliseconds(stepResult.Step.StepExecutionResult.ExecutionResult.ExecutionTime);
+                                        if (stepResult.Step.StepExecutionResult.ExecutionResult.ScreenShot?.Length != 0)
+                                        {
+                                            scenarioReporter.Log(new Client.Requests.AddLogItemRequest
+                                            {
+                                                Level = Client.Models.LogLevel.Debug,
+                                                Time = lastStepStartTime,
+                                                Text = "Screenshot",
+                                                Attach = new Client.Models.Attach("Screenshot", "image/png", stepResult.Step.StepExecutionResult.ExecutionResult.ScreenShot.ToByteArray())
+                                            });
+                                        }
+
+                                        lastStepStartTime = lastStepStartTime.AddMilliseconds(stepResult.Step.StepExecutionResult.ExecutionResult.ExecutionTime);
+                                    }
                                 }
 
                                 scenarioReporter.Finish(new Client.Requests.FinishTestItemRequest
