@@ -1,7 +1,7 @@
 image: Visual Studio 2019
 
 install:
-  - ps: gitversion /l console /output buildserver
+  - ps: gitversion /output buildserver
 
 configuration: Release
 
