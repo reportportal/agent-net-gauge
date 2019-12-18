@@ -2,7 +2,7 @@ image: Visual Studio 2019
 
 install:
   - ps: dotnet tool install GitVersion.Tool -g --version 5.1.3-beta1.61
-  - ps: dotnet-gitversion /output buildserver
+  - ps: dotnet-gitversion /l console /output buildserver
 
 configuration: Release
 
