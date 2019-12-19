@@ -211,7 +211,7 @@ namespace ReportPortal.Gauge
                     {
                         Console.Write("Finishing to send results to Report Portal... ");
                         var sw = Stopwatch.StartNew();
-                        launchReporter.FinishTask?.Wait();
+                        launchReporter.Sync();
 
                         Console.WriteLine($"Elapsed: {sw.Elapsed}");
 
