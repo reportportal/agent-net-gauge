@@ -1,7 +1,8 @@
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 install:
-  - ps: gitversion /l console /output buildserver
+  - ps: dotnet tool install GitVersion.Tool -g --version 5.1.3-beta1.89
+  - ps: dotnet-gitversion /output buildserver
 
 configuration: Release
 
@@ -18,9 +19,9 @@ dotnet_csproj:
 
 build_script:
 - cmd: >-
-    dotnet publish -c %configuration% -r %runtime%
+    dotnet publish -c %configuration% -r %runtime% /p:PublishSingleFile=true
 
-    7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./ReportPortal.Gauge/bin/%configuration%/netcoreapp2.1/%runtime%/publish/*
+    7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./ReportPortal.Gauge/bin/%configuration%/netcoreapp3.1/%runtime%/publish/*
 
 artifacts:
   - path: '**/.zip'
