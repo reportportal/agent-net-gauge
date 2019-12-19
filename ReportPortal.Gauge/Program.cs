@@ -4,6 +4,7 @@ using ReportPortal.Client;
 using ReportPortal.Shared;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
+using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace ReportPortal.Gauge
             var rpUuid = Config.GetValue<string>("Uuid");
 
             var service = new Service(rpUri, rpProject, rpUuid);
-            var launchReporter = new LaunchReporter(service);
+            var launchReporter = new LaunchReporter(service, Config, requestExecuterFactory: null);
 
             using (var gaugeConnection = new GaugeConnection(new TcpClientWrapper(port)))
             {
