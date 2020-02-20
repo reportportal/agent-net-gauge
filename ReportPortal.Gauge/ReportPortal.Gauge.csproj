@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Gauge.CSharp.Core" Version="0.3.7" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="ReportPortal.Shared" Version="2.4.7" />
+    <PackageReference Include="ReportPortal.Shared" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>

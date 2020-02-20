@@ -52,7 +52,7 @@ namespace ReportPortal.GaugePlugin
             var rpUuid = Config.GetValue<string>("Uuid");
 
             var service = new Service(rpUri, rpProject, rpUuid);
-            var launchReporter = new LaunchReporter(service, Config, requestExecuterFactory: null);
+            var launchReporter = new LaunchReporter(service, Config, null);
 
             var tcpClientWrapper = new TcpClientWrapper(port);
             using (var gaugeConnection = new GaugeConnection(tcpClientWrapper))
