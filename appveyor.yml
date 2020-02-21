@@ -19,7 +19,7 @@ dotnet_csproj:
 
 build_script:
 - cmd: >-
-    dotnet publish -c %configuration% -r %runtime% /p:PublishSingleFile=true
+    dotnet publish -c %configuration% -r %runtime% /p:PublishSingleFile=true /p:PublishTrimmed=true
 
     7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./ReportPortal.Gauge/bin/%configuration%/netcoreapp3.1/%runtime%/publish/*
 
