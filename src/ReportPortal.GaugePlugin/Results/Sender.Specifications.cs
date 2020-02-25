@@ -17,7 +17,7 @@ namespace ReportPortal.GaugePlugin.Results
         {
             var specResult = request.SpecResult;
 
-            var specReporter = _launchReporter.StartChildTestReporter(new StartTestItemRequest
+            var specReporter = _launch.StartChildTestReporter(new StartTestItemRequest
             {
                 Type = TestItemType.Suite,
                 Name = specResult.ProtoSpec.SpecHeading,
@@ -26,13 +26,13 @@ namespace ReportPortal.GaugePlugin.Results
                 Tags = specResult.ProtoSpec.Tags.Select(t => t.ToString()).ToList()
             });
 
-            var key = Newtonsoft.Json.JsonConvert.SerializeObject(request.CurrentExecutionInfo.CurrentSpec);
+            var key = GetSpecKey(request.CurrentExecutionInfo.CurrentSpec);
             _specs[key] = specReporter;
         }
 
         public void FinishSpec(SpecExecutionEndingRequest request)
         {
-            var key = Newtonsoft.Json.JsonConvert.SerializeObject(request.CurrentExecutionInfo.CurrentSpec);
+            var key = GetSpecKey(request.CurrentExecutionInfo.CurrentSpec);
 
             _specs[key].Finish(new FinishTestItemRequest
             {
@@ -40,6 +40,11 @@ namespace ReportPortal.GaugePlugin.Results
             });
 
             _specs.Remove(key);
+        }
+
+        private string GetSpecKey(SpecInfo specInfo)
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(new { specInfo.Name, specInfo.FileName });
         }
     }
 }

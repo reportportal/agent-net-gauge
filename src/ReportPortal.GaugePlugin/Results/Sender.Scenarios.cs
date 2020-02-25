@@ -31,7 +31,7 @@ namespace ReportPortal.GaugePlugin.Results
                     break;
             }
 
-            var specReporter = _specs[Newtonsoft.Json.JsonConvert.SerializeObject(request.CurrentExecutionInfo.CurrentSpec)];
+            var specReporter = _specs[GetSpecKey(request.CurrentExecutionInfo.CurrentSpec)];
 
             var scenarioReporter = specReporter.StartChildTestReporter(new StartTestItemRequest
             {
@@ -42,13 +42,13 @@ namespace ReportPortal.GaugePlugin.Results
                 Tags = scenario.Tags.Select(t => t.ToString()).ToList()
             });
 
-            var key = Newtonsoft.Json.JsonConvert.SerializeObject(new { request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario });
+            var key = GetScenarioKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
             _scenarios[key] = scenarioReporter;
         }
 
         public void FinishScenario(ScenarioExecutionEndingRequest request)
         {
-            var key = Newtonsoft.Json.JsonConvert.SerializeObject(new { request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario });
+            var key = GetScenarioKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
 
             _scenarios[key].Finish(new FinishTestItemRequest
             {
@@ -57,6 +57,11 @@ namespace ReportPortal.GaugePlugin.Results
             });
 
             _scenarios.Remove(key);
+        }
+
+        private string GetScenarioKey(SpecInfo specInfo, ScenarioInfo scenarioInfo)
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(new { specInfo.FileName, specInfo.Name, ScenarioName = scenarioInfo.Name });
         }
     }
 }

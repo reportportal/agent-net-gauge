@@ -10,33 +10,62 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private ILaunchReporter _launchReporter;
+        private object _lockObj = new object();
+
+        private int _launchesCount;
+
+        private ILaunchReporter _launch;
 
         public void StartLaunch(ExecutionStartingRequest request)
         {
-            var suiteExecutionResult = request.SuiteResult;
-
-            _launchReporter = new LaunchReporter(_service, _configuration, null);
-            _launchReporter.Start(new StartLaunchRequest
+            lock (_lockObj)
             {
-                Name = _configuration.GetValue("Launch:Name", suiteExecutionResult.ProjectName),
-                Description = _configuration.GetValue("Launch:Description", string.Empty),
-                Tags = _configuration.GetValues("Launch:Tags", new List<string>()).ToList(),
-                StartTime = DateTime.UtcNow
-            });
+                if (_launch == null)
+                {
+                    var suiteExecutionResult = request.SuiteResult;
+
+                    var launchReporter = new LaunchReporter(_service, _configuration, null);
+
+                    launchReporter.Start(new StartLaunchRequest
+                    {
+                        Name = _configuration.GetValue("Launch:Name", suiteExecutionResult.ProjectName),
+                        Description = _configuration.GetValue("Launch:Description", string.Empty),
+                        Tags = _configuration.GetValues("Launch:Tags", new List<string>()).ToList(),
+                        StartTime = DateTime.UtcNow
+                    });
+
+                    _launch = launchReporter;
+                }
+
+                _launchesCount++;
+            }
         }
 
         public void FinishLaunch(ExecutionEndingRequest request)
         {
-            _launchReporter.Finish(new FinishLaunchRequest
+            lock (_lockObj)
             {
-                EndTime = DateTime.UtcNow
-            });
+                _launchesCount--;
+
+                if (_launchesCount == 0)
+                {
+                    _launch.Finish(new FinishLaunchRequest
+                    {
+                        EndTime = DateTime.UtcNow
+                    });
+                }
+            }
         }
 
         public void Sync()
         {
-            _launchReporter.Sync();
+            lock(_lockObj)
+            {
+                if (_launchesCount == 0)
+                {
+                    _launch.Sync();
+                }
+            }
         }
     }
 }

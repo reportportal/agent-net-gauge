@@ -53,11 +53,6 @@ namespace ReportPortal.GaugePlugin
                 if (request.SuiteResult != null)
                 {
                     _sender.FinishLaunch(request);
-
-                    Console.Write("Finishing to send results to Report Portal... ");
-                    var sw = Stopwatch.StartNew();
-                    _sender.Sync();
-                    Console.WriteLine($"Successfully sent. Elapsed: {sw.Elapsed}");
                 }
             }
             catch (Exception exp)
@@ -148,21 +143,43 @@ namespace ReportPortal.GaugePlugin
             return Task.FromResult(new Empty());
         }
 
-
-
-
-
-
-
-        public override Task<Empty> NotifyStepExecutionEnding(StepExecutionEndingRequest request, ServerCallContext context)
+        public override Task<Empty> NotifyStepExecutionStarting(StepExecutionStartingRequest request, ServerCallContext context)
         {
-            //TraceLogger.Info("NotifyStepExecutionEnding received");
+            try
+            {
+                TraceLogger.Info($"{nameof(NotifyStepExecutionStarting)} received");
+                TraceLogger.Verbose(Newtonsoft.Json.JsonConvert.SerializeObject(request));
+
+                if (request.StepResult != null)
+                {
+                    _sender.StartStep(request);
+                }
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error(exp.ToString());
+            }
+
             return Task.FromResult(new Empty());
         }
 
-        public override Task<Empty> NotifyStepExecutionStarting(StepExecutionStartingRequest request, ServerCallContext context)
+        public override Task<Empty> NotifyStepExecutionEnding(StepExecutionEndingRequest request, ServerCallContext context)
         {
-            //TraceLogger.Info("NotifyStepExecutionStarting received");
+            try
+            {
+                TraceLogger.Info($"{nameof(NotifyStepExecutionEnding)} received");
+                TraceLogger.Verbose(Newtonsoft.Json.JsonConvert.SerializeObject(request));
+
+                if (request.StepResult != null)
+                {
+                    _sender.FinishStep(request);
+                }
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error(exp.ToString());
+            }
+
             return Task.FromResult(new Empty());
         }
 
@@ -176,6 +193,19 @@ namespace ReportPortal.GaugePlugin
             TraceLogger.Info("Kill received");
             try
             {
+                try
+                {
+                    Console.Write("Finishing to send results to Report Portal... ");
+                    var sw = Stopwatch.StartNew();
+                    _sender.Sync();
+                    Console.WriteLine($"Successfully sent. Elapsed: {sw.Elapsed}");
+                }
+                catch (Exception exp)
+                {
+                    Console.WriteLine($"Unexpected errors: {exp}");
+                }
+
+
                 return new Empty();
             }
             finally
