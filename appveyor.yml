@@ -21,7 +21,7 @@ build_script:
 - cmd: >-
     dotnet publish -c %configuration% -r %runtime% /p:PublishSingleFile=true /p:PublishTrimmed=true /p:IncludeSymbolsInSingleFile=true
 
-    7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./ReportPortal.Gauge/bin/%configuration%/netcoreapp3.1/%runtime%/publish/*
+    7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./src/ReportPortal.GaugePlugin/bin/%configuration%/netcoreapp3.1/%runtime%/publish/*
 
 artifacts:
   - path: '**/.zip'

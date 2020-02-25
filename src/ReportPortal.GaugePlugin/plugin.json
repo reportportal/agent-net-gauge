@@ -5,13 +5,13 @@
   "description": "Sends specification execution results to http://ReportPortal.io",
   "PostInstall": {
     "windows": [],
-    "linux": [ "chmod", "+x", "ReportPortal.Gauge" ],
-    "darwin": [ "chmod", "+x", "ReportPortal.Gauge" ]
+    "linux": [ "chmod", "+x", "ReportPortal.GaugePlugin" ],
+    "darwin": [ "chmod", "+x", "ReportPortal.GaugePlugin" ]
   },
   "command": {
-    "windows": [ "ReportPortal.Gauge.exe" ],
-    "linux": [ "./ReportPortal.Gauge" ],
-    "darwin": [ "./ReportPortal.Gauge" ]
+    "windows": [ "ReportPortal.GaugePlugin.exe" ],
+    "linux": [ "./ReportPortal.GaugePlugin" ],
+    "darwin": [ "./ReportPortal.GaugePlugin" ]
   },
   "scope": [ "Execution" ],
   "gaugeVersionSupport": {

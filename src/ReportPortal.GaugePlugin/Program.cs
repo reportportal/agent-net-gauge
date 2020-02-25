@@ -2,6 +2,7 @@
 using Gauge.Messages;
 using Grpc.Core;
 using ReportPortal.Client;
+using ReportPortal.GaugePlugin.Results;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
 using ReportPortal.Shared.Internal.Logging;
@@ -18,181 +19,29 @@ namespace ReportPortal.GaugePlugin
     {
         private static ITraceLogger TraceLogger = TraceLogManager.GetLogger<Program>();
 
-        private static Dictionary<ExecutionStatus, Client.Models.Status> _statusMap;
-
-        private static IConfiguration Config;
-
-        static Program()
-        {
-            _statusMap = new Dictionary<ExecutionStatus, Client.Models.Status>
-            {
-                { ExecutionStatus.Failed, Client.Models.Status.Failed },
-                { ExecutionStatus.Notexecuted, Client.Models.Status.Skipped },
-                { ExecutionStatus.Passed, Client.Models.Status.Passed },
-                { ExecutionStatus.Skipped, Client.Models.Status.Skipped }
-            };
-
-            var configPrefix = "RP_";
-            var configDelimeter = "_";
-            Config = new ConfigurationBuilder()
-                .Add(new EnvironmentVariablesConfigurationProvider(configPrefix, configDelimeter, EnvironmentVariableTarget.Process))
-                .Add(new EnvironmentVariablesConfigurationProvider(configPrefix, configDelimeter, EnvironmentVariableTarget.User))
-                .Add(new EnvironmentVariablesConfigurationProvider(configPrefix, configDelimeter, EnvironmentVariableTarget.Machine))
-                .Build();
-        }
-
-        public class MyHandler : Gauge.Messages.Reporter.ReporterBase
-        {
-            private static ITraceLogger TraceLogger = TraceLogManager.GetLogger<MyHandler>();
-
-            private Server _server;
-
-            public MyHandler(Server server)
-            {
-                _server = server;
-            }
-
-            public override Task<Empty> NotifyExecutionStarting(ExecutionStartingRequest request, ServerCallContext context)
-            {
-                try
-                {
-                    TraceLogger.Info($"NotifyExecutionStarting received");
-                    TraceLogger.Verbose(Newtonsoft.Json.JsonConvert.SerializeObject(request));
-                }
-                catch (Exception exp)
-                {
-                    TraceLogger.Error(exp.ToString());
-                }
-
-                return Task.FromResult(new Empty());
-            }
-
-            public override Task<Empty> NotifyExecutionEnding(ExecutionEndingRequest request, ServerCallContext context)
-            {
-                try
-                {
-                    TraceLogger.Info($"NotifyExecutionEnding received");
-                    TraceLogger.Verbose(Newtonsoft.Json.JsonConvert.SerializeObject(request));
-
-                    if (request.SuiteResult != null)
-                    {
-                        Console.Write("Finishing to send results to Report Portal... ");
-                        var sw = Stopwatch.StartNew();
-                        Console.WriteLine($"Successfully sent. Elapsed: {sw.Elapsed}");
-                    }
-                }
-                catch (Exception exp)
-                {
-                    TraceLogger.Error(exp.ToString());
-                }
-
-                return Task.FromResult(new Empty());
-            }
-
-            public override Task<Empty> NotifyScenarioExecutionEnding(ScenarioExecutionEndingRequest request, ServerCallContext context)
-            {
-                try
-                {
-                    TraceLogger.Info($"NotifyScenarioExecutionEnding received");
-                    TraceLogger.Verbose(Newtonsoft.Json.JsonConvert.SerializeObject(request));
-                }
-                catch (Exception exp)
-                {
-                    TraceLogger.Error(exp.ToString());
-                }
-
-                return Task.FromResult(new Empty());
-            }
-
-            public override Task<Empty> NotifyScenarioExecutionStarting(ScenarioExecutionStartingRequest request, ServerCallContext context)
-            {
-                try
-                {
-                    TraceLogger.Info($"NotifyScenarioExecutionStarting received");
-                    TraceLogger.Verbose(Newtonsoft.Json.JsonConvert.SerializeObject(request));
-                }
-                catch (Exception exp)
-                {
-                    TraceLogger.Error(exp.ToString());
-                }
-
-                return Task.FromResult(new Empty());
-            }
-
-            public override Task<Empty> NotifySpecExecutionEnding(SpecExecutionEndingRequest request, ServerCallContext context)
-            {
-                try
-                {
-                    TraceLogger.Info($"NotifySpecExecutionEnding received");
-                    TraceLogger.Verbose(Newtonsoft.Json.JsonConvert.SerializeObject(request));
-                }
-                catch (Exception exp)
-                {
-                    TraceLogger.Error(exp.ToString());
-                }
-
-                return Task.FromResult(new Empty());
-            }
-
-            public override Task<Empty> NotifySpecExecutionStarting(SpecExecutionStartingRequest request, ServerCallContext context)
-            {
-                try
-                {
-                    TraceLogger.Info($"NotifySpecExecutionStarting received");
-                    TraceLogger.Verbose(Newtonsoft.Json.JsonConvert.SerializeObject(request));
-                }
-                catch (Exception exp)
-                {
-                    TraceLogger.Error(exp.ToString());
-                }
-
-                return Task.FromResult(new Empty());
-            }
-
-            public override Task<Empty> NotifyStepExecutionEnding(StepExecutionEndingRequest request, ServerCallContext context)
-            {
-                //TraceLogger.Info("NotifyStepExecutionEnding received");
-                return Task.FromResult(new Empty());
-            }
-
-            public override Task<Empty> NotifyStepExecutionStarting(StepExecutionStartingRequest request, ServerCallContext context)
-            {
-                //TraceLogger.Info("NotifyStepExecutionStarting received");
-                return Task.FromResult(new Empty());
-            }
-
-            public override Task<Empty> NotifySuiteResult(SuiteExecutionResult request, ServerCallContext context)
-            {
-                //TraceLogger.Info("NotifySuiteResult received");
-                return Task.FromResult(new Empty());
-            }
-
-            public override async Task<Empty> Kill(KillProcessRequest request, ServerCallContext context)
-            {
-                TraceLogger.Info("Kill received");
-                try
-                {
-                    return new Empty();
-                }
-                finally
-                {
-                    //await Task.Delay(5000);
-                    await _server.KillAsync();
-                }
-            }
-        }
-
         static async Task Main(string[] args)
         {
+            var configuration = new ConfigurationBuilder()
+                .Add(new EnvironmentVariablesConfigurationProvider("RP_", "_", EnvironmentVariableTarget.Process))
+                .Build();
+
+            var url = configuration.GetValue<string>(ConfigurationPath.ServerUrl);
+            var project = configuration.GetValue<string>(ConfigurationPath.ServerProject);
+            var apiToken = configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid);
+            var apiClientService = new Service(new Uri(url), project, apiToken);
+
+            var sender = new Sender(apiClientService, configuration);
+
             var server = new Server();
 
-            var s = Reporter.BindService(new MyHandler(server));
+            var s = Reporter.BindService(new ReportMessagesHandler(server, sender));
             server.Services.Add(s);
 
-            var g_port = server.Ports.Add(new ServerPort("127.0.0.1", 0, ServerCredentials.Insecure));
+            var g_port = server.Ports.Add(new ServerPort("localhost", 0, ServerCredentials.Insecure));
+            server.Start();
 
             Console.Write($"Listening on port:{g_port}");
-            server.Start();
+
             TraceLogger.Info("Server has started.");
 
             await server.ShutdownTask;
