@@ -1,16 +1,11 @@
-﻿using Gauge.CSharp.Core;
-using Gauge.Messages;
+﻿using Gauge.Messages;
 using Grpc.Core;
 using ReportPortal.Client;
 using ReportPortal.GaugePlugin.Results;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
 using ReportPortal.Shared.Internal.Logging;
-using ReportPortal.Shared.Reporter;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ReportPortal.GaugePlugin
