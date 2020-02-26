@@ -20,22 +20,22 @@ namespace ReportPortal.GaugePlugin
                 .Add(new EnvironmentVariablesConfigurationProvider("RP_", "_", EnvironmentVariableTarget.Process))
                 .Build();
 
-            var url = configuration.GetValue<string>(ConfigurationPath.ServerUrl);
-            var project = configuration.GetValue<string>(ConfigurationPath.ServerProject);
-            var apiToken = configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid);
-            var apiClientService = new Service(new Uri(url), project, apiToken);
+            var rpUrl = configuration.GetValue<string>("Uri");
+            var rpProject = configuration.GetValue<string>("Project");
+            var rpApiToken = configuration.GetValue<string>("Uuid");
+            var apiClientService = new Service(new Uri(rpUrl), rpProject, rpApiToken);
 
             var sender = new Sender(apiClientService, configuration);
 
             var server = new Server();
 
-            var s = Reporter.BindService(new ReportMessagesHandler(server, sender));
-            server.Services.Add(s);
+            var messagesHandlerService = Reporter.BindService(new ReportMessagesHandler(server, sender));
+            server.Services.Add(messagesHandlerService);
 
-            var g_port = server.Ports.Add(new ServerPort("localhost", 0, ServerCredentials.Insecure));
+            var gaugePort = server.Ports.Add(new ServerPort("localhost", 0, ServerCredentials.Insecure));
             server.Start();
 
-            Console.Write($"Listening on port:{g_port}");
+            Console.Write($"Listening on port:{gaugePort}");
 
             TraceLogger.Info("Server has started.");
 
