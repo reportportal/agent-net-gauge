@@ -1,17 +1,17 @@
 {
   "id": "reportportal",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "name": "ReportPortal",
   "description": "Sends specification execution results to http://ReportPortal.io",
   "PostInstall": {
     "windows": [],
-    "linux": [ "chmod", "+x", "ReportPortal.Gauge" ],
-    "darwin": [ "chmod", "+x", "ReportPortal.Gauge" ]
+    "linux": [ "chmod", "+x", "ReportPortal.GaugePlugin" ],
+    "darwin": [ "chmod", "+x", "ReportPortal.GaugePlugin" ]
   },
   "command": {
-    "windows": [ "ReportPortal.Gauge.exe" ],
-    "linux": [ "./ReportPortal.Gauge" ],
-    "darwin": [ "./ReportPortal.Gauge" ]
+    "windows": [ "ReportPortal.GaugePlugin.exe" ],
+    "linux": [ "./ReportPortal.GaugePlugin" ],
+    "darwin": [ "./ReportPortal.GaugePlugin" ]
   },
   "scope": [ "Execution" ],
   "gaugeVersionSupport": {
@@ -19,5 +19,6 @@
     "maximum": ""
   },
   "capabilities": [
+    "grpc_support"
   ]
 }
