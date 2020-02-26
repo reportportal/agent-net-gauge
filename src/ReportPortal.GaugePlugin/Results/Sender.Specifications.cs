@@ -44,7 +44,7 @@ namespace ReportPortal.GaugePlugin.Results
 
         private string GetSpecKey(SpecInfo specInfo)
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(new { specInfo.Name, specInfo.FileName });
+            return System.Text.Json.JsonSerializer.Serialize(new { specInfo.Name, specInfo.FileName });
         }
     }
 }

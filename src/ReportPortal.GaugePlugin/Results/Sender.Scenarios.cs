@@ -61,7 +61,7 @@ namespace ReportPortal.GaugePlugin.Results
 
         private string GetScenarioKey(SpecInfo specInfo, ScenarioInfo scenarioInfo)
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(new { specInfo.FileName, specInfo.Name, ScenarioName = scenarioInfo.Name });
+            return System.Text.Json.JsonSerializer.Serialize(new { specInfo.FileName, specInfo.Name, ScenarioName = scenarioInfo.Name });
         }
     }
 }

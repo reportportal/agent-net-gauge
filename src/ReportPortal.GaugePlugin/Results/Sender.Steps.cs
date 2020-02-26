@@ -108,7 +108,7 @@ namespace ReportPortal.GaugePlugin.Results
 
         private string GetStepKey(SpecInfo specInfo, ScenarioInfo scenarioInfo, StepInfo stepInfo)
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(new { specInfo.FileName, specInfo.Name, ScenarioName = scenarioInfo.Name, StepName = stepInfo.Step.ActualStepText });
+            return System.Text.Json.JsonSerializer.Serialize(new { specInfo.FileName, specInfo.Name, ScenarioName = scenarioInfo.Name, StepName = stepInfo.Step.ActualStepText });
         }
     }
 }
