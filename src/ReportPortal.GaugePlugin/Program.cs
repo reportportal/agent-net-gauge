@@ -16,11 +16,17 @@ namespace ReportPortal.GaugePlugin
 
         static async Task Main(string[] args)
         {
+            var envVariables = Environment.GetEnvironmentVariables();
+            foreach (var envVariableKey in envVariables.Keys)
+            {
+                TraceLogger.Verbose($"{envVariableKey}: {envVariables[envVariableKey]}");
+            }
+
             var configuration = new ConfigurationBuilder()
                 .Add(new EnvironmentVariablesConfigurationProvider("RP_", "_", EnvironmentVariableTarget.Process))
                 .Build();
 
-            var rpUrl = configuration.GetValue<string>("Uri");
+            var rpUrl = configuration.GetValue<string>("Url");
             var rpProject = configuration.GetValue<string>("Project");
             var rpApiToken = configuration.GetValue<string>("Uuid");
             var apiClientService = new Service(new Uri(rpUrl), rpProject, rpApiToken);

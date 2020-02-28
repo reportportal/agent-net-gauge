@@ -4,6 +4,7 @@ using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ReportPortal.GaugePlugin.Results
@@ -95,6 +96,30 @@ namespace ReportPortal.GaugePlugin.Results
                     Level = LogLevel.Error,
                     Text = $"{request.StepResult.ProtoItem.Step.StepExecutionResult.ExecutionResult.ErrorMessage}{Environment.NewLine}{Environment.NewLine}{request.StepResult.ProtoItem.Step.StepExecutionResult.ExecutionResult.StackTrace}"
                 });
+            }
+
+            try
+            {
+                var failureScreenshotFile = request.StepResult.ProtoItem.Step.StepExecutionResult.ExecutionResult.FailureScreenshotFile;
+                if (!string.IsNullOrEmpty(failureScreenshotFile))
+                {
+                    stepReporter.Log(new CreateLogItemRequest
+                    {
+                        Time = DateTime.UtcNow,
+                        Level = LogLevel.Error,
+                        Text = "Screenshot",
+                        Attach = new Attach
+                        {
+                            Name = "screenshot",
+                            MimeType = Shared.MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(failureScreenshotFile)),
+                            Data = File.ReadAllBytes(Path.Combine(_gaugeScreenshotsDir, failureScreenshotFile))
+                        }
+                    });
+                }
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error($"Couldn't parse failure step screenshot. {exp}");
             }
 
             stepReporter.Finish(new FinishTestItemRequest

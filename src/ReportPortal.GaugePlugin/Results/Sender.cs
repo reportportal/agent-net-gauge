@@ -15,6 +15,8 @@ namespace ReportPortal.GaugePlugin.Results
 
         private static Dictionary<ExecutionStatus, Status> _statusMap;
 
+        private string _gaugeScreenshotsDir;
+
         private IClientService _service;
         private IConfiguration _configuration;
 
@@ -33,6 +35,8 @@ namespace ReportPortal.GaugePlugin.Results
         {
             _service = service;
             _configuration = configuration;
+
+            _gaugeScreenshotsDir = Environment.GetEnvironmentVariable("gauge_screenshots_dir");
         }
 
 
