@@ -19,11 +19,23 @@ namespace ReportPortal.GaugePlugin.Results
 
             var scenarioReporter = _scenarios[GetScenarioKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario)];
 
+            var stepName = stepResult.ProtoItem.Step.ActualText;
+
+            #region step parameter
+            if (stepResult.ProtoItem.Step.Fragments != null)
+            {
+                foreach (var fragment in stepResult.ProtoItem.Step.Fragments.Where(f => f.FragmentType == Fragment.Types.FragmentType.Parameter && f.Parameter.ParameterType == Parameter.Types.ParameterType.Dynamic))
+                {
+                    stepName = stepName.Replace($"<{fragment.Parameter.Name}>", $"\"{fragment.Parameter.Value}\"");
+                }
+            }
+            #endregion
+
             var stepReporter = scenarioReporter.StartChildTestReporter(new StartTestItemRequest
             {
                 Type = TestItemType.Step,
                 StartTime = DateTime.UtcNow,
-                Name = stepResult.ProtoItem.Step.ActualText,
+                Name = stepName,
                 HasStats = false
             });
 
