@@ -26,10 +26,10 @@ namespace ReportPortal.GaugePlugin
                 .Add(new EnvironmentVariablesConfigurationProvider("RP_", "_", EnvironmentVariableTarget.Process))
                 .Build();
 
-            var rpUrl = configuration.GetValue<string>("Url");
+            var rpUri = configuration.GetValue<string>("Uri");
             var rpProject = configuration.GetValue<string>("Project");
             var rpApiToken = configuration.GetValue<string>("Uuid");
-            var apiClientService = new Service(new Uri(rpUrl), rpProject, rpApiToken);
+            var apiClientService = new Service(new Uri(rpUri), rpProject, rpApiToken);
 
             var sender = new Sender(apiClientService, configuration);
 
