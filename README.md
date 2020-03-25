@@ -28,3 +28,7 @@ Modify your `manifest.json` file and add `reportportal` plugin into plugins list
 If you have already installed previe version and want to install stable version, firstly you need uninstall plugin and install it again.
 
 > gauge uninstall reportportal
+
+# Troubleshooting
+
+Set `ReportPortal_TraceLevel` property in `env/default/default.properties` file to `Verbose` value. Execute tests and file logs in default `logs` directory.

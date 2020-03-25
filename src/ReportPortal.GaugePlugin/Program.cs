@@ -6,16 +6,24 @@ using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
 using ReportPortal.Shared.Internal.Logging;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace ReportPortal.GaugePlugin
 {
     class Program
     {
-        private static ITraceLogger TraceLogger = TraceLogManager.GetLogger<Program>();
+        private static ITraceLogger TraceLogger;
 
         static async Task Main(string[] args)
         {
+            var gaugeProjectRoot = Environment.GetEnvironmentVariable("GAUGE_PROJECT_ROOT");
+            var gaugeLogsDir = Environment.GetEnvironmentVariable("logs_directory");
+
+            var internalTraceLogginDir = Path.Combine(gaugeProjectRoot, gaugeLogsDir);
+
+            TraceLogger = TraceLogManager.Instance.WithBaseDir(internalTraceLogginDir).GetLogger<Program>();
+
             var envVariables = Environment.GetEnvironmentVariables();
             foreach (var envVariableKey in envVariables.Keys)
             {

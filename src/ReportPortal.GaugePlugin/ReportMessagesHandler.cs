@@ -10,7 +10,7 @@ namespace ReportPortal.GaugePlugin
 {
     class ReportMessagesHandler : Reporter.ReporterBase
     {
-        private static ITraceLogger TraceLogger = TraceLogManager.GetLogger<ReportMessagesHandler>();
+        private static ITraceLogger TraceLogger = TraceLogManager.Instance.GetLogger<ReportMessagesHandler>();
 
         private Server _server;
 

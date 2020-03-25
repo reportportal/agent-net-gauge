@@ -1,11 +1,10 @@
 ﻿using Gauge.Messages;
+using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ReportPortal.GaugePlugin.Results
 {

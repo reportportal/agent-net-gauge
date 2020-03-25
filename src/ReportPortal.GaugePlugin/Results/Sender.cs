@@ -1,7 +1,6 @@
 ﻿using Gauge.Messages;
-using ReportPortal.Client;
 using ReportPortal.Client.Abstractions;
-using ReportPortal.Client.Abstractions.Responses;
+using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Internal.Logging;
 using System;
@@ -11,7 +10,7 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private static ITraceLogger TraceLogger = TraceLogManager.GetLogger<Sender>();
+        private static ITraceLogger TraceLogger = TraceLogManager.Instance.GetLogger<Sender>();
 
         private static Dictionary<ExecutionStatus, Status> _statusMap;
 
