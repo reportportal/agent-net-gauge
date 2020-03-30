@@ -6,6 +6,7 @@ using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
 using ReportPortal.Shared.Internal.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -41,7 +42,11 @@ namespace ReportPortal.GaugePlugin
 
             var sender = new Sender(apiClientService, configuration);
 
-            var server = new Server();
+            var channelOptions = new List<ChannelOption> {
+                new ChannelOption(ChannelOptions.MaxReceiveMessageLength, -1)
+            };
+
+            var server = new Server(channelOptions);
 
             var messagesHandlerService = Reporter.BindService(new ReportMessagesHandler(server, sender));
             server.Services.Add(messagesHandlerService);
