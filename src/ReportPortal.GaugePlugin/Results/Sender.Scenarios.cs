@@ -1,7 +1,6 @@
 ﻿using Gauge.Messages;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Generic;
@@ -40,7 +39,7 @@ namespace ReportPortal.GaugePlugin.Results
                 StartTime = DateTime.UtcNow,
                 Name = scenario.ScenarioHeading,
                 Description = string.Join("", scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
-                Tags = scenario.Tags.Select(t => t.ToString()).ToList()
+                Attributes = scenario.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList()
             });
 
             var key = GetScenarioKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);

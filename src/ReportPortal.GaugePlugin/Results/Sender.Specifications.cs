@@ -22,7 +22,7 @@ namespace ReportPortal.GaugePlugin.Results
                 Name = specResult.ProtoSpec.SpecHeading,
                 Description = string.Join("", specResult.ProtoSpec.Items.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
                 StartTime = DateTime.UtcNow,
-                Tags = specResult.ProtoSpec.Tags.Select(t => t.ToString()).ToList()
+                Attributes = specResult.ProtoSpec.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList()
             });
 
             var key = GetSpecKey(request.CurrentExecutionInfo.CurrentSpec);
