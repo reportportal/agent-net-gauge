@@ -4,7 +4,6 @@ using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ReportPortal.GaugePlugin.Results
 {
@@ -30,7 +29,7 @@ namespace ReportPortal.GaugePlugin.Results
                     {
                         Name = _configuration.GetValue("Launch:Name", suiteExecutionResult.ProjectName),
                         Description = _configuration.GetValue("Launch:Description", string.Empty),
-                        Tags = _configuration.GetValues("Launch:Tags", new List<string>()).ToList(),
+                        Attributes = _configuration.GetKeyValues("Launch:Attributes", new List<KeyValuePair<string, string>>()).Select(a => new Client.Abstractions.Models.ItemAttribute { Key = a.Key, Value = a.Value }).ToList(),
                         StartTime = DateTime.UtcNow
                     });
 
@@ -59,7 +58,7 @@ namespace ReportPortal.GaugePlugin.Results
 
         public void Sync()
         {
-            lock(_lockObj)
+            lock (_lockObj)
             {
                 if (_launchesCount == 0)
                 {
