@@ -17,7 +17,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="ReportPortal.Shared" Version="3.0.0-alpha.60" />
+    <PackageReference Include="ReportPortal.Shared" Version="3.0.0-alpha.61" />
   </ItemGroup>
 
   <ItemGroup>

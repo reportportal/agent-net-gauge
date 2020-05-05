@@ -33,13 +33,23 @@ namespace ReportPortal.GaugePlugin.Results
 
             var specReporter = _specs[GetSpecKey(request.CurrentExecutionInfo.CurrentSpec)];
 
+            // find TestCaseId
+            var testCaseIdTagPrefix = "TestCaseId:";
+            string testCaseIdTagValue = null;
+            var testCaseIdTag = scenario.Tags.FirstOrDefault(t => t.ToLowerInvariant().StartsWith(testCaseIdTagPrefix.ToLowerInvariant()));
+            if (testCaseIdTag != null)
+            {
+                testCaseIdTagValue = testCaseIdTag.Substring(testCaseIdTagPrefix.Length);
+            }
+
             var scenarioReporter = specReporter.StartChildTestReporter(new StartTestItemRequest
             {
                 Type = TestItemType.Step,
                 StartTime = DateTime.UtcNow,
                 Name = scenario.ScenarioHeading,
                 Description = string.Join("", scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
-                Attributes = scenario.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList()
+                Attributes = scenario.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList(),
+                TestCaseId = testCaseIdTagValue
             });
 
             var key = GetScenarioKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
