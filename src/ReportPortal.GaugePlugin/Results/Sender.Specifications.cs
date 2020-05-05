@@ -14,19 +14,37 @@ namespace ReportPortal.GaugePlugin.Results
 
         public void StartSpec(SpecExecutionStartingRequest request)
         {
-            var specResult = request.SpecResult;
-
-            var specReporter = _launch.StartChildTestReporter(new StartTestItemRequest
+            lock (_lockObj)
             {
-                Type = TestItemType.Suite,
-                Name = specResult.ProtoSpec.SpecHeading,
-                Description = string.Join("", specResult.ProtoSpec.Items.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
-                StartTime = DateTime.UtcNow,
-                Attributes = specResult.ProtoSpec.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList()
-            });
+                if (_launch == null)
+                {
+                    var launchReporter = new LaunchReporter(_service, _configuration, null);
 
-            var key = GetSpecKey(request.CurrentExecutionInfo.CurrentSpec);
-            _specs[key] = specReporter;
+                    // if execution is rerun
+                    if (request.CurrentExecutionInfo.ExecutionArgs.Any(arg => arg.FlagName.ToLowerInvariant() == "failed"))
+                    {
+                        _startLaunchRequest.IsRerun = true;
+                    }
+
+                    launchReporter.Start(_startLaunchRequest);
+
+                    _launch = launchReporter;
+                }
+
+                var specResult = request.SpecResult;
+
+                var specReporter = _launch.StartChildTestReporter(new StartTestItemRequest
+                {
+                    Type = TestItemType.Suite,
+                    Name = specResult.ProtoSpec.SpecHeading,
+                    Description = string.Join("", specResult.ProtoSpec.Items.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
+                    StartTime = DateTime.UtcNow,
+                    Attributes = specResult.ProtoSpec.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList()
+                });
+
+                var key = GetSpecKey(request.CurrentExecutionInfo.CurrentSpec);
+                _specs[key] = specReporter;
+            }
         }
 
         public void FinishSpec(SpecExecutionEndingRequest request)

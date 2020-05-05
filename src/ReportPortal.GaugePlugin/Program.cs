@@ -48,7 +48,15 @@ namespace ReportPortal.GaugePlugin
 
             var server = new Server(channelOptions);
 
-            var messagesHandlerService = Reporter.BindService(new ReportMessagesHandler(server, sender));
+            ServerServiceDefinition messagesHandlerService;
+            if (configuration.GetValue("Enabled", true))
+            {
+                messagesHandlerService = Reporter.BindService(new ReportMessagesHandler(server, sender));
+            }
+            else
+            {
+                messagesHandlerService = Reporter.BindService(new EmptyMessagesHandler(server));
+            }
             server.Services.Add(messagesHandlerService);
 
             var gaugePort = server.Ports.Add(new ServerPort("localhost", 0, ServerCredentials.Insecure));

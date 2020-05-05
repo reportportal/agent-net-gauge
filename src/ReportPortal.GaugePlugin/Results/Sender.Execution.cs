@@ -15,6 +15,8 @@ namespace ReportPortal.GaugePlugin.Results
 
         private ILaunchReporter _launch;
 
+        private StartLaunchRequest _startLaunchRequest;
+
         public void StartLaunch(ExecutionStartingRequest request)
         {
             lock (_lockObj)
@@ -23,17 +25,14 @@ namespace ReportPortal.GaugePlugin.Results
                 {
                     var suiteExecutionResult = request.SuiteResult;
 
-                    var launchReporter = new LaunchReporter(_service, _configuration, null);
-
-                    launchReporter.Start(new StartLaunchRequest
+                    // deffer starting of launch
+                    _startLaunchRequest = new StartLaunchRequest
                     {
                         Name = _configuration.GetValue("Launch:Name", suiteExecutionResult.ProjectName),
                         Description = _configuration.GetValue("Launch:Description", string.Empty),
                         Attributes = _configuration.GetKeyValues("Launch:Attributes", new List<KeyValuePair<string, string>>()).Select(a => new Client.Abstractions.Models.ItemAttribute { Key = a.Key, Value = a.Value }).ToList(),
                         StartTime = DateTime.UtcNow
-                    });
-
-                    _launch = launchReporter;
+                    };
                 }
 
                 _launchesCount++;
