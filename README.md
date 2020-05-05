@@ -2,7 +2,7 @@
 
 > gauge install reportportal
 
-Or manually download plugin from [releases](https://github.com/reportportal/agent-net-gauge/releases)
+Or manually download plugin from [releases](https://github.com/reportportal/agent-net-gauge/releases) tab.
 
 And then:
 > gauge install reportportal --file <path_to_plugin_zip_file>
@@ -19,9 +19,11 @@ rp_uuid = 7853c7a9-7f27-43ea-835a-cab01355fd17
 rp_launch_name = My Super Project
 rp_launch_description = This is description
 rp_launch_attributes = tag1; tag2; platform:x64
+
+rp_enabled = true/false
 ```
 
-Modify your `manifest.json` file and add `reportportal` plugin into plugins list.
+Modify your `manifest.json` file and add `reportportal` plugin into plugins list if it is not there yet.
 
 # Upgrading after Preview version
 
@@ -31,4 +33,4 @@ If you have already installed previe version and want to install stable version,
 
 # Troubleshooting
 
-Set `ReportPortal_TraceLevel` property in `env/default/default.properties` file to `Verbose` value. Execute tests and file logs in default `logs` directory.
+Set `ReportPortal_TraceLevel` property in `env/default/default.properties` file to `Verbose` value. Execute tests and find logs in default `logs` directory.
