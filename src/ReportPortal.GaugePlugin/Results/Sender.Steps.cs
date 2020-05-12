@@ -4,6 +4,7 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private Dictionary<string, ITestReporter> _steps = new Dictionary<string, ITestReporter>();
+        private ConcurrentDictionary<string, ITestReporter> _steps = new ConcurrentDictionary<string, ITestReporter>();
 
         public void StartStep(StepExecutionStartingRequest request)
         {
@@ -141,7 +142,7 @@ namespace ReportPortal.GaugePlugin.Results
                 Status = stepStatus
             });
 
-            _steps.Remove(key);
+            _steps.TryRemove(key, out _);
         }
 
         private string GetStepKey(SpecInfo specInfo, ScenarioInfo scenarioInfo, StepInfo stepInfo)

@@ -3,6 +3,7 @@ using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Reporter;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,7 +11,7 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private Dictionary<string, ITestReporter> _scenarios = new Dictionary<string, ITestReporter>();
+        private ConcurrentDictionary<string, ITestReporter> _scenarios = new ConcurrentDictionary<string, ITestReporter>();
 
         public void StartScenario(ScenarioExecutionStartingRequest request)
         {
@@ -66,7 +67,7 @@ namespace ReportPortal.GaugePlugin.Results
                 Status = _statusMap[request.ScenarioResult.ProtoItem.Scenario.ExecutionStatus]
             });
 
-            _scenarios.Remove(key);
+            _scenarios.TryRemove(key, out _);
         }
 
         private string GetScenarioKey(SpecInfo specInfo, ScenarioInfo scenarioInfo)

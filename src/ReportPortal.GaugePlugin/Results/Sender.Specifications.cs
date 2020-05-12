@@ -3,6 +3,7 @@ using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Reporter;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,7 +11,7 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private Dictionary<string, ITestReporter> _specs = new Dictionary<string, ITestReporter>();
+        private ConcurrentDictionary<string, ITestReporter> _specs = new ConcurrentDictionary<string, ITestReporter>();
 
         public void StartSpec(SpecExecutionStartingRequest request)
         {
@@ -56,7 +57,7 @@ namespace ReportPortal.GaugePlugin.Results
                 EndTime = DateTime.UtcNow
             });
 
-            _specs.Remove(key);
+            _specs.TryRemove(key, out _);
         }
 
         private string GetSpecKey(SpecInfo specInfo)
