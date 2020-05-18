@@ -19,6 +19,9 @@ namespace ReportPortal.GaugePlugin.Results
         {
             var stepResult = request.StepResult;
 
+            var key = GetStepKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario, request.CurrentExecutionInfo.CurrentStep);
+            TraceLogger.Verbose($"Starting step with key: {key}");
+
             var scenarioReporter = _scenarios[GetScenarioKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario)];
 
             var stepName = stepResult.ProtoItem.Step.ActualText;
@@ -75,14 +78,13 @@ namespace ReportPortal.GaugePlugin.Results
             }
             #endregion
 
-            var key = GetStepKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario, request.CurrentExecutionInfo.CurrentStep);
             _steps[key] = stepReporter;
         }
 
         public void FinishStep(StepExecutionEndingRequest request)
         {
             var key = GetStepKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario, request.CurrentExecutionInfo.CurrentStep);
-
+            TraceLogger.Verbose($"Finishing step with key: {key}");
             var stepReporter = _steps[key];
 
             var stepStatus = Status.Passed;
