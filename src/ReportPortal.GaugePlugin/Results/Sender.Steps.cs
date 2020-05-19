@@ -89,6 +89,21 @@ namespace ReportPortal.GaugePlugin.Results
 
             var stepStatus = Status.Passed;
 
+            // process gauge log messages
+            var logMessages = request.StepResult.ProtoItem.Step.StepExecutionResult.ExecutionResult.Message;
+            if (logMessages != null)
+            {
+                foreach (var logMessage in logMessages)
+                {
+                    stepReporter.Log(new CreateLogItemRequest
+                    {
+                        Text = logMessage,
+                        Level = LogLevel.Debug,
+                        Time = DateTime.UtcNow
+                    });
+                }
+            }
+
             // todo it's never skipped
             if (request.StepResult.ProtoItem.Step.StepExecutionResult.Skipped)
             {
