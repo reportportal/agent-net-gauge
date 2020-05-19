@@ -43,14 +43,14 @@ namespace ReportPortal.GaugePlugin.Results
                     Attributes = specResult.ProtoSpec.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList()
                 });
 
-                var key = GetSpecKey(request.CurrentExecutionInfo.CurrentSpec);
+                var key = GetSpecKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec);
                 _specs[key] = specReporter;
             }
         }
 
         public void FinishSpec(SpecExecutionEndingRequest request)
         {
-            var key = GetSpecKey(request.CurrentExecutionInfo.CurrentSpec);
+            var key = GetSpecKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec);
 
             _specs[key].Finish(new FinishTestItemRequest
             {
@@ -60,9 +60,9 @@ namespace ReportPortal.GaugePlugin.Results
             _specs.TryRemove(key, out _);
         }
 
-        private string GetSpecKey(SpecInfo specInfo)
+        private string GetSpecKey(ExecutionInfo executionInfo, SpecInfo specInfo)
         {
-            return System.Text.Json.JsonSerializer.Serialize(new { specInfo.Name, specInfo.FileName });
+            return System.Text.Json.JsonSerializer.Serialize(new { specInfo.Name, specInfo.FileName, executionInfo.RunnerId });
         }
     }
 }

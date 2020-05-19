@@ -32,7 +32,7 @@ namespace ReportPortal.GaugePlugin.Results
                     break;
             }
 
-            var specReporter = _specs[GetSpecKey(request.CurrentExecutionInfo.CurrentSpec)];
+            var specReporter = _specs[GetSpecKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec)];
 
             // find TestCaseId
             var testCaseIdTagPrefix = "TestCaseId:";
@@ -53,13 +53,13 @@ namespace ReportPortal.GaugePlugin.Results
                 TestCaseId = testCaseIdTagValue
             });
 
-            var key = GetScenarioKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
+            var key = GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
             _scenarios[key] = scenarioReporter;
         }
 
         public void FinishScenario(ScenarioExecutionEndingRequest request)
         {
-            var key = GetScenarioKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
+            var key = GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
 
             _scenarios[key].Finish(new FinishTestItemRequest
             {
@@ -70,9 +70,9 @@ namespace ReportPortal.GaugePlugin.Results
             _scenarios.TryRemove(key, out _);
         }
 
-        private string GetScenarioKey(SpecInfo specInfo, ScenarioInfo scenarioInfo)
+        private string GetScenarioKey(ExecutionInfo executionInfo, SpecInfo specInfo, ScenarioInfo scenarioInfo)
         {
-            return System.Text.Json.JsonSerializer.Serialize(new { specInfo.FileName, specInfo.Name, ScenarioName = scenarioInfo.Name });
+            return System.Text.Json.JsonSerializer.Serialize(new { Spec = GetSpecKey(executionInfo, specInfo), ScenarioName = scenarioInfo.Name });
         }
     }
 }
