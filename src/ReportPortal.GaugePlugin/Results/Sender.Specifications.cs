@@ -1,10 +1,10 @@
 ﻿using Gauge.Messages;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ReportPortal.GaugePlugin.Results
@@ -19,7 +19,7 @@ namespace ReportPortal.GaugePlugin.Results
             {
                 if (_launch == null)
                 {
-                    var launchReporter = new LaunchReporter(_service, _configuration, null);
+                    var launchReporter = new LaunchReporter(_service, _configuration, null, new ExtensionManager());
 
                     // if execution is rerun
                     if (request.CurrentExecutionInfo.ExecutionArgs.Any(arg => arg.FlagName.ToLowerInvariant() == "failed"))
