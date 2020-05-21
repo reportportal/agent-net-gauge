@@ -43,6 +43,44 @@ namespace ReportPortal.GaugePlugin.Results
                     Attributes = specResult.ProtoSpec.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList()
                 });
 
+                // pre hook messages
+                if (specResult.ProtoSpec.PreHookMessages.Count != 0 || specResult.ProtoSpec.PreHookFailures.Count != 0)
+                {
+                    var preHookReporter = specReporter.StartChildTestReporter(new StartTestItemRequest
+                    {
+                        Name = "Before Specification",
+                        StartTime = DateTime.UtcNow,
+                        Type = TestItemType.BeforeClass
+                    });
+
+                    foreach (var preHookMessage in specResult.ProtoSpec.PreHookMessages)
+                    {
+                        preHookReporter.Log(new CreateLogItemRequest
+                        {
+                            Level = LogLevel.Debug,
+                            Text = preHookMessage,
+                            Time = DateTime.UtcNow
+                        });
+                    }
+
+                    foreach (var preHookFailure in specResult.ProtoSpec.PreHookFailures)
+                    {
+                        preHookReporter.Log(new CreateLogItemRequest
+                        {
+                            Level = LogLevel.Error,
+                            Text = $"{preHookFailure.ErrorMessage}{Environment.NewLine}{preHookFailure.StackTrace}",
+                            Time = DateTime.UtcNow
+                        });
+                    }
+
+                    preHookReporter.Finish(new FinishTestItemRequest
+                    {
+                        EndTime = DateTime.UtcNow,
+                        Status = specResult.ProtoSpec.PreHookFailures.Count == 0 ? Status.Passed : Status.Failed
+
+                    });
+                }
+
                 var key = GetSpecKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec);
                 _specs[key] = specReporter;
             }
@@ -52,7 +90,49 @@ namespace ReportPortal.GaugePlugin.Results
         {
             var key = GetSpecKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec);
 
-            _specs[key].Finish(new FinishTestItemRequest
+            var specReporter = _specs[key];
+
+            var specResult = request.SpecResult;
+
+            // post hook messages
+            if (specResult.ProtoSpec.PostHookMessages.Count != 0 || specResult.ProtoSpec.PostHookFailures.Count != 0)
+            {
+                var postHookReporter = specReporter.StartChildTestReporter(new StartTestItemRequest
+                {
+                    Name = "After Specification",
+                    StartTime = DateTime.UtcNow,
+                    Type = TestItemType.AfterClass
+                });
+
+                foreach (var postHookMessage in specResult.ProtoSpec.PostHookMessages)
+                {
+                    postHookReporter.Log(new CreateLogItemRequest
+                    {
+                        Level = LogLevel.Debug,
+                        Text = postHookMessage,
+                        Time = DateTime.UtcNow
+                    });
+                }
+
+                foreach (var postHookFailure in specResult.ProtoSpec.PostHookFailures)
+                {
+                    postHookReporter.Log(new CreateLogItemRequest
+                    {
+                        Level = LogLevel.Error,
+                        Text = $"{postHookFailure.ErrorMessage}{Environment.NewLine}{postHookFailure.StackTrace}",
+                        Time = DateTime.UtcNow
+                    });
+                }
+
+                postHookReporter.Finish(new FinishTestItemRequest
+                {
+                    EndTime = DateTime.UtcNow,
+                    Status = specResult.ProtoSpec.PostHookFailures.Count == 0 ? Status.Passed : Status.Failed
+
+                });
+            }
+
+            specReporter.Finish(new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow
             });

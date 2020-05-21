@@ -77,6 +77,20 @@ namespace ReportPortal.GaugePlugin.Results
             }
             #endregion
 
+            // pre hook messages
+            if (stepResult.ProtoItem.Step.PreHookMessages.Count != 0)
+            {
+                foreach (var preHookMessage in stepResult.ProtoItem.Step.PreHookMessages)
+                {
+                    stepReporter.Log(new CreateLogItemRequest
+                    {
+                        Level = LogLevel.Debug,
+                        Text = preHookMessage,
+                        Time = DateTime.UtcNow
+                    });
+                }
+            }
+
             _steps[key] = stepReporter;
         }
 
@@ -150,6 +164,20 @@ namespace ReportPortal.GaugePlugin.Results
             catch (Exception exp)
             {
                 TraceLogger.Error($"Couldn't parse failure step screenshot. {exp}");
+            }
+
+            // post hook messages
+            if (request.StepResult.ProtoItem.Step.PostHookMessages.Count != 0)
+            {
+                foreach (var postHookMessage in request.StepResult.ProtoItem.Step.PostHookMessages)
+                {
+                    stepReporter.Log(new CreateLogItemRequest
+                    {
+                        Level = LogLevel.Debug,
+                        Text = postHookMessage,
+                        Time = DateTime.UtcNow
+                    });
+                }
             }
 
             stepReporter.Finish(new FinishTestItemRequest
