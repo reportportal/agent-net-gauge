@@ -56,17 +56,9 @@ namespace ReportPortal.GaugePlugin.Results
             // pre hook messages
             if (scenarioResult.Scenario.PreHookMessages.Count != 0 || scenarioResult.Scenario.PreHookFailure != null)
             {
-                var preHookReporter = scenarioReporter.StartChildTestReporter(new StartTestItemRequest
-                {
-                    Name = "Before Scenario",
-                    StartTime = DateTime.UtcNow,
-                    Type = TestItemType.BeforeMethod,
-                    HasStats = false
-                });
-
                 foreach (var preHookMessage in scenarioResult.Scenario.PreHookMessages)
                 {
-                    preHookReporter.Log(new CreateLogItemRequest
+                    scenarioReporter.Log(new CreateLogItemRequest
                     {
                         Level = LogLevel.Debug,
                         Text = preHookMessage,
@@ -78,20 +70,13 @@ namespace ReportPortal.GaugePlugin.Results
                 {
                     var preHookFailure = scenarioResult.Scenario.PreHookFailure;
 
-                    preHookReporter.Log(new CreateLogItemRequest
+                    scenarioReporter.Log(new CreateLogItemRequest
                     {
                         Level = LogLevel.Error,
                         Text = $"{preHookFailure.ErrorMessage}{Environment.NewLine}{preHookFailure.StackTrace}",
                         Time = DateTime.UtcNow
                     });
                 }
-
-                preHookReporter.Finish(new FinishTestItemRequest
-                {
-                    EndTime = DateTime.UtcNow,
-                    Status = scenarioResult.Scenario.PreHookFailure == null ? Status.Passed : Status.Failed
-
-                });
             }
 
             var key = GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
@@ -109,17 +94,9 @@ namespace ReportPortal.GaugePlugin.Results
             // post hook messages
             if (scenarioResult.ProtoItem.Scenario.PostHookMessages.Count != 0 || scenarioResult.ProtoItem.Scenario.PostHookFailure != null)
             {
-                var postHookReporter = scenarioReporter.StartChildTestReporter(new StartTestItemRequest
-                {
-                    Name = "After Scenario",
-                    StartTime = DateTime.UtcNow,
-                    Type = TestItemType.AfterMethod,
-                    HasStats = false
-                });
-
                 foreach (var postHookMessage in scenarioResult.ProtoItem.Scenario.PostHookMessages)
                 {
-                    postHookReporter.Log(new CreateLogItemRequest
+                    scenarioReporter.Log(new CreateLogItemRequest
                     {
                         Level = LogLevel.Debug,
                         Text = postHookMessage,
@@ -131,20 +108,13 @@ namespace ReportPortal.GaugePlugin.Results
                 {
                     var postHookFailure = scenarioResult.ProtoItem.Scenario.PostHookFailure;
 
-                    postHookReporter.Log(new CreateLogItemRequest
+                    scenarioReporter.Log(new CreateLogItemRequest
                     {
                         Level = LogLevel.Error,
                         Text = $"{postHookFailure.ErrorMessage}{Environment.NewLine}{postHookFailure.StackTrace}",
                         Time = DateTime.UtcNow
                     });
                 }
-
-                postHookReporter.Finish(new FinishTestItemRequest
-                {
-                    EndTime = DateTime.UtcNow,
-                    Status = scenarioResult.ProtoItem.Scenario.PostHookFailure == null ? Status.Passed : Status.Failed
-
-                });
             }
 
             scenarioReporter.Finish(new FinishTestItemRequest
