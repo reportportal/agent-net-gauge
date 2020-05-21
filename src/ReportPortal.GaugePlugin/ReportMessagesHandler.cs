@@ -190,6 +190,7 @@ namespace ReportPortal.GaugePlugin
 
         public override async Task<Empty> Kill(KillProcessRequest request, ServerCallContext context)
         {
+
             TraceLogger.Info("Kill received");
             try
             {
@@ -205,7 +206,6 @@ namespace ReportPortal.GaugePlugin
                     Console.WriteLine($"Unexpected errors: {exp}");
                 }
 
-
                 return new Empty();
             }
             finally
@@ -215,3 +215,4 @@ namespace ReportPortal.GaugePlugin
         }
     }
 }
+

@@ -5,7 +5,6 @@ using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -19,10 +18,10 @@ namespace ReportPortal.GaugePlugin.Results
         {
             var stepResult = request.StepResult;
 
-            var key = GetStepKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario, request.CurrentExecutionInfo.CurrentStep);
+            var key = GetStepKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario, request.CurrentExecutionInfo.CurrentStep);
             TraceLogger.Verbose($"Starting step with key: {key}");
 
-            var scenarioReporter = _scenarios[GetScenarioKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario)];
+            var scenarioReporter = _scenarios[GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario)];
 
             var stepName = stepResult.ProtoItem.Step.ActualText;
 
@@ -83,7 +82,7 @@ namespace ReportPortal.GaugePlugin.Results
 
         public void FinishStep(StepExecutionEndingRequest request)
         {
-            var key = GetStepKey(request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario, request.CurrentExecutionInfo.CurrentStep);
+            var key = GetStepKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario, request.CurrentExecutionInfo.CurrentStep);
             TraceLogger.Verbose($"Finishing step with key: {key}");
             var stepReporter = _steps[key];
 
@@ -162,9 +161,9 @@ namespace ReportPortal.GaugePlugin.Results
             _steps.TryRemove(key, out _);
         }
 
-        private string GetStepKey(SpecInfo specInfo, ScenarioInfo scenarioInfo, StepInfo stepInfo)
+        private string GetStepKey(ExecutionInfo executionInfo, SpecInfo specInfo, ScenarioInfo scenarioInfo, StepInfo stepInfo)
         {
-            return System.Text.Json.JsonSerializer.Serialize(new { specInfo.FileName, specInfo.Name, ScenarioName = scenarioInfo.Name, StepName = stepInfo.Step.ActualStepText });
+            return System.Text.Json.JsonSerializer.Serialize(new { Scenario = GetScenarioKey(executionInfo, specInfo, scenarioInfo), StepName = stepInfo.Step.ActualStepText });
         }
     }
 }
