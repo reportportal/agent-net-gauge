@@ -43,6 +43,18 @@ namespace ReportPortal.GaugePlugin.Results
                 testCaseIdTagValue = testCaseIdTag.Substring(testCaseIdTagPrefix.Length);
             }
 
+            // parse scenario parameters
+            var scenarioRequestParameters = new List<KeyValuePair<string, string>>();
+            var scenarioStepFragments = scenarioResult.Scenario.ScenarioItems?
+                .Where(si => si.ItemType == ProtoItem.Types.ItemType.Step && si.Step != null && si.Step.Fragments != null)
+                .SelectMany(si => si.Step.Fragments.Where(f => f.FragmentType == Fragment.Types.FragmentType.Parameter));
+            foreach (var scenarioStepFragment in scenarioStepFragments)
+            {
+                var paramName = scenarioStepFragment.Parameter.Name;
+                var paramValue = scenarioStepFragment.Parameter.Value;
+                scenarioRequestParameters.Add(new KeyValuePair<string, string>(paramName, paramValue));
+            }
+
             var scenarioReporter = specReporter.StartChildTestReporter(new StartTestItemRequest
             {
                 Type = TestItemType.Step,
@@ -50,7 +62,8 @@ namespace ReportPortal.GaugePlugin.Results
                 Name = scenario.ScenarioHeading,
                 Description = string.Join("", scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
                 Attributes = scenario.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList(),
-                TestCaseId = testCaseIdTagValue
+                TestCaseId = testCaseIdTagValue,
+                Parameters = scenarioRequestParameters
             });
 
             // pre hook messages
