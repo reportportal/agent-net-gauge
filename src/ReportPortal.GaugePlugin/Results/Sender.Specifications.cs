@@ -19,7 +19,7 @@ namespace ReportPortal.GaugePlugin.Results
             {
                 if (_launch == null)
                 {
-                    var launchReporter = new LaunchReporter(_service, _configuration, null, new ExtensionManager());
+                    var launchReporter = new LaunchReporter(_service, _configuration, null, ExtensionManager.Instance);
 
                     // if execution is rerun
                     if (request.CurrentExecutionInfo.ExecutionArgs.Any(arg => arg.FlagName.ToLowerInvariant() == "failed"))
@@ -40,7 +40,7 @@ namespace ReportPortal.GaugePlugin.Results
                     Name = specResult.ProtoSpec.SpecHeading,
                     Description = string.Join("", specResult.ProtoSpec.Items.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
                     StartTime = DateTime.UtcNow,
-                    Attributes = specResult.ProtoSpec.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList()
+                    Attributes = specResult.ProtoSpec.Tags.Select(t => ConvertTagToAttribute(t)).ToList()
                 });
 
                 // pre hook messages

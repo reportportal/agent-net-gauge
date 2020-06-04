@@ -61,7 +61,7 @@ namespace ReportPortal.GaugePlugin.Results
                 StartTime = DateTime.UtcNow,
                 Name = scenario.ScenarioHeading,
                 Description = string.Join("", scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
-                Attributes = scenario.Tags.Select(t => new ItemAttribute { Value = t.ToString() }).ToList(),
+                Attributes = scenario.Tags.Select(t => ConvertTagToAttribute(t)).ToList(),
                 TestCaseId = testCaseIdTagValue,
                 Parameters = scenarioRequestParameters
             });
