@@ -1,6 +1,6 @@
 {
   "id": "reportportal",
-  "version": "1.6.1",
+  "version": "1.8.0",
   "name": "ReportPortal",
   "description": "Sends specification execution results to http://ReportPortal.io",
   "PostInstall": {

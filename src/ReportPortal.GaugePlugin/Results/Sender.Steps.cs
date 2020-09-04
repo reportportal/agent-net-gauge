@@ -1,7 +1,6 @@
 ﻿using Gauge.Messages;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Concurrent;
@@ -152,7 +151,7 @@ namespace ReportPortal.GaugePlugin.Results
                         Time = DateTime.UtcNow,
                         Level = LogLevel.Error,
                         Text = "Screenshot",
-                        Attach = new Attach
+                        Attach = new LogItemAttach
                         {
                             Name = "screenshot",
                             MimeType = Shared.MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(failureScreenshotFile)),
