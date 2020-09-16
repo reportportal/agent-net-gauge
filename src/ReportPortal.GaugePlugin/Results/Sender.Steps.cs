@@ -1,7 +1,6 @@
 ﻿using Gauge.Messages;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Concurrent;
@@ -142,29 +141,18 @@ namespace ReportPortal.GaugePlugin.Results
                 });
             }
 
-            try
+            // process custom screenshots
+            var screenshots = request.StepResult.ProtoItem.Step.StepExecutionResult.ExecutionResult.ScreenshotFiles;
+            if (screenshots != null)
             {
-                var failureScreenshotFile = request.StepResult.ProtoItem.Step.StepExecutionResult.ExecutionResult.FailureScreenshotFile;
-                if (!string.IsNullOrEmpty(failureScreenshotFile))
+                foreach (var screeenshot in screenshots)
                 {
-                    stepReporter.Log(new CreateLogItemRequest
-                    {
-                        Time = DateTime.UtcNow,
-                        Level = LogLevel.Error,
-                        Text = "Screenshot",
-                        Attach = new Attach
-                        {
-                            Name = "screenshot",
-                            MimeType = Shared.MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(failureScreenshotFile)),
-                            Data = File.ReadAllBytes(Path.Combine(_gaugeScreenshotsDir, failureScreenshotFile))
-                        }
-                    });
+                    AttachScreenshot(screeenshot, LogLevel.Info, stepReporter);
                 }
             }
-            catch (Exception exp)
-            {
-                TraceLogger.Error($"Couldn't parse failure step screenshot. {exp}");
-            }
+
+            // process screenshot on failure
+            AttachScreenshot(request.StepResult.ProtoItem.Step.StepExecutionResult.ExecutionResult.FailureScreenshotFile, LogLevel.Error, stepReporter);
 
             // post hook messages
             if (request.StepResult.ProtoItem.Step.PostHookMessages.Count != 0)
@@ -193,5 +181,31 @@ namespace ReportPortal.GaugePlugin.Results
         {
             return System.Text.Json.JsonSerializer.Serialize(new { Scenario = GetScenarioKey(executionInfo, specInfo, scenarioInfo), StepName = stepInfo.Step.ActualStepText });
         }
+
+        private void AttachScreenshot(String screenshotFile, LogLevel logLevel, ITestReporter stepReporter)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(screenshotFile))
+                {
+                    stepReporter.Log(new CreateLogItemRequest
+                    {
+                        Time = DateTime.UtcNow,
+                        Level = logLevel,
+                        Text = "Screenshot",
+                        Attach = new LogItemAttach
+                        {
+                            Name = "screenshot",
+                            MimeType = Shared.MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(screenshotFile)),
+                            Data = File.ReadAllBytes(Path.Combine(_gaugeScreenshotsDir, screenshotFile))
+                        }
+                    });
+                }
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error($"Couldn't parse step screenshot. {exp}");
+            }
+        }		
     }
 }
