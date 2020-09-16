@@ -29,7 +29,7 @@ namespace ReportPortal.GaugePlugin.Results
                 { ExecutionStatus.Skipped, Status.Skipped }
             };
 
-            Shared.Extensibility.Analytics.AnalyticsReportEventsObserver.DefineConsumer("agent-net-gauge");
+            Shared.Extensibility.Analytics.AnalyticsReportEventsObserver.DefineConsumer("agent-dotnet-gauge");
         }
 
         public Sender(IClientService service, IConfiguration configuration)
