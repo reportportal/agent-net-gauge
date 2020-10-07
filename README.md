@@ -23,6 +23,8 @@ rp_launch_attributes = tag1; tag2; platform:x64
 rp_enabled = true/false
 ```
 
+Discover [more](https://github.com/reportportal/commons-net/blob/master/docs/Configuration.md) about configuration.
+
 Modify your `manifest.json` file and add `reportportal` plugin into plugins list if it is not there yet.
 
 # Upgrading after Preview version
@@ -34,3 +36,8 @@ If you have already installed previe version and want to install stable version,
 # Troubleshooting
 
 Set `ReportPortal_TraceLevel` property in `env/default/default.properties` file to `Verbose` value. Execute tests and find logs in default `logs` directory.
+
+# License
+ReportPortal is licensed under [Apache 2.0](https://github.com/reportportal/agent-net-nunit/blob/master/LICENSE)
+
+We use Google Analytics for sending anonymous usage information as library's name/version and the agent's name/version when starting launch. This information might help us to improve integration with ReportPortal. Used by the ReportPortal team only and not for sharing with 3rd parties. You are able to [turn off](https://github.com/reportportal/commons-net/blob/master/docs/Configuration.md#analytics) it if needed.
