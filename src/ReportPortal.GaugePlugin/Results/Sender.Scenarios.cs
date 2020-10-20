@@ -55,7 +55,7 @@ namespace ReportPortal.GaugePlugin.Results
                 scenarioRequestParameters.Add(new KeyValuePair<string, string>(paramName, paramValue));
             }
 
-            var scenarioReporter = specReporter.StartChildTestReporter(new StartTestItemRequest
+            var startTestItemRequest = new StartTestItemRequest
             {
                 Type = TestItemType.Step,
                 StartTime = DateTime.UtcNow,
@@ -64,7 +64,15 @@ namespace ReportPortal.GaugePlugin.Results
                 Attributes = scenario.Tags.Select(t => ConvertTagToAttribute(t)).ToList(),
                 TestCaseId = testCaseIdTagValue,
                 Parameters = scenarioRequestParameters
-            });
+            };
+
+            // parse scenario retry
+            if (request.CurrentExecutionInfo?.ExecutionArgs?.Any(arg => arg.FlagName.Equals("max-retries-count", StringComparison.InvariantCultureIgnoreCase)) == true)
+            {
+                startTestItemRequest.IsRetry = true;
+            }
+
+            var scenarioReporter = specReporter.StartChildTestReporter(startTestItemRequest);
 
             // pre hook messages
             if (scenarioResult.Scenario.PreHookMessages.Count != 0 || scenarioResult.Scenario.PreHookFailure != null)
