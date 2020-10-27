@@ -11,6 +11,7 @@ environment:
     - runtime: win-x86
     - runtime: win-x64
     - runtime: linux-x64
+    - runtime: linux-musl-x64
     - runtime: osx-x64
 
 dotnet_csproj:
