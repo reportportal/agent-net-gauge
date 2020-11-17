@@ -3,18 +3,11 @@ using Grpc.Core;
 using ReportPortal.Shared.Internal.Logging;
 using System.Threading.Tasks;
 
-namespace ReportPortal.GaugePlugin
+namespace ReportPortal.GaugePlugin.Services
 {
     class EmptyMessagesHandler : Reporter.ReporterBase
     {
         private static ITraceLogger TraceLogger = TraceLogManager.Instance.GetLogger<EmptyMessagesHandler>();
-
-        private Server _server;
-
-        public EmptyMessagesHandler(Server server)
-        {
-            _server = server;
-        }
 
         public override Task<Empty> NotifyExecutionStarting(ExecutionStartingRequest request, ServerCallContext context)
         {
@@ -61,16 +54,17 @@ namespace ReportPortal.GaugePlugin
             return Task.FromResult(new Empty());
         }
 
-        public override async Task<Empty> Kill(KillProcessRequest request, ServerCallContext context)
+        public override Task<Empty> Kill(KillProcessRequest request, ServerCallContext context)
         {
             TraceLogger.Info("Kill received");
+
             try
             {
-                return new Empty();
+                return Task.FromResult(new Empty());
             }
             finally
             {
-                await _server.KillAsync();
+                Program.ShutDownCancelationSource.Cancel();
             }
         }
     }
