@@ -19,7 +19,7 @@ namespace ReportPortal.GaugePlugin
         static async Task Main(string[] args)
         {
             var gaugeProjectRoot = Environment.GetEnvironmentVariable("GAUGE_PROJECT_ROOT") ?? Environment.CurrentDirectory;
-            var gaugeLogsDir = Environment.GetEnvironmentVariable("logs_directory") ?? "logs";
+            var gaugeLogsDir = Environment.GetEnvironmentVariable("logs_directory") ?? "";
 
             var internalTraceLogginDir = Path.Combine(gaugeProjectRoot, gaugeLogsDir);
 
@@ -43,7 +43,7 @@ namespace ReportPortal.GaugePlugin
            Host.CreateDefaultBuilder(args)
                .ConfigureWebHostDefaults(webBuilder =>
                {
-                   webBuilder.ConfigureLogging(logging => logging.ClearProviders());
+                   webBuilder.ConfigureLogging(logging => logging.SetMinimumLevel(LogLevel.Error));
 
                    webBuilder.UseKestrel(options =>
                    {

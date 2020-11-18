@@ -63,7 +63,7 @@ namespace ReportPortal.GaugePlugin
             foreach (var address in addressFeature.Addresses)
             {
                 var gaugePort = int.Parse(address.Split(":").Last());
-                Console.Write($"Listening on port:{gaugePort}");
+                Console.WriteLine($"Listening on port:{gaugePort}");
             }
         }
     }
