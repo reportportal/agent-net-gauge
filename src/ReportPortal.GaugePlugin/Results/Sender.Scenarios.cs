@@ -48,6 +48,7 @@ namespace ReportPortal.GaugePlugin.Results
             var scenarioStepFragments = scenarioResult.Scenario.ScenarioItems?
                 .Where(si => si.ItemType == ProtoItem.Types.ItemType.Step && si.Step != null && si.Step.Fragments != null)
                 .SelectMany(si => si.Step.Fragments.Where(f => f.FragmentType == Fragment.Types.FragmentType.Parameter));
+
             foreach (var scenarioStepFragment in scenarioStepFragments)
             {
                 var paramName = scenarioStepFragment.Parameter.Name;
@@ -55,13 +56,17 @@ namespace ReportPortal.GaugePlugin.Results
                 scenarioRequestParameters.Add(new KeyValuePair<string, string>(paramName, paramValue));
             }
 
+            var attributes = scenario.Tags.Select(t => ConvertTagToAttribute(t)).ToList();
+            // inherit scenario tags from specification
+            attributes.AddRange(request.CurrentExecutionInfo.CurrentSpec.Tags.Select(t => ConvertTagToAttribute(t)).ToList());
+
             var startTestItemRequest = new StartTestItemRequest
             {
                 Type = TestItemType.Step,
                 StartTime = DateTime.UtcNow,
                 Name = scenario.ScenarioHeading,
                 Description = string.Join("", scenario.ScenarioItems.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
-                Attributes = scenario.Tags.Select(t => ConvertTagToAttribute(t)).ToList(),
+                Attributes = attributes,
                 TestCaseId = testCaseIdTagValue,
                 Parameters = scenarioRequestParameters
             };
