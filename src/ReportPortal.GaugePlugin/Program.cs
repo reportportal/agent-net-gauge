@@ -1,13 +1,11 @@
-﻿using Gauge.Messages;
-using Grpc.Core;
-using ReportPortal.Client;
-using ReportPortal.GaugePlugin.Results;
-using ReportPortal.Shared.Configuration;
-using ReportPortal.Shared.Configuration.Providers;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using ReportPortal.Shared.Internal.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReportPortal.GaugePlugin
@@ -16,10 +14,12 @@ namespace ReportPortal.GaugePlugin
     {
         private static ITraceLogger TraceLogger;
 
+        public static CancellationTokenSource ShutDownCancelationSource = new CancellationTokenSource();
+
         static async Task Main(string[] args)
         {
-            var gaugeProjectRoot = Environment.GetEnvironmentVariable("GAUGE_PROJECT_ROOT");
-            var gaugeLogsDir = Environment.GetEnvironmentVariable("logs_directory");
+            var gaugeProjectRoot = Environment.GetEnvironmentVariable("GAUGE_PROJECT_ROOT") ?? Environment.CurrentDirectory;
+            var gaugeLogsDir = Environment.GetEnvironmentVariable("logs_directory") ?? "";
 
             var internalTraceLogginDir = Path.Combine(gaugeProjectRoot, gaugeLogsDir);
 
@@ -31,42 +31,27 @@ namespace ReportPortal.GaugePlugin
                 TraceLogger.Verbose($"{envVariableKey}: {envVariables[envVariableKey]}");
             }
 
-            var configuration = new ConfigurationBuilder()
-                .Add(new EnvironmentVariablesConfigurationProvider("RP_", "_", EnvironmentVariableTarget.Process))
-                .Build();
-
-            var rpUri = configuration.GetValue<string>("Uri");
-            var rpProject = configuration.GetValue<string>("Project");
-            var rpApiToken = configuration.GetValue<string>("Uuid");
-            var apiClientService = new Service(new Uri(rpUri), rpProject, rpApiToken);
-
-            var sender = new Sender(apiClientService, configuration);
-
-            var channelOptions = new List<ChannelOption> {
-                new ChannelOption(ChannelOptions.MaxReceiveMessageLength, -1)
-            };
-
-            var server = new Server(channelOptions);
-
-            ServerServiceDefinition messagesHandlerService;
-            if (configuration.GetValue("Enabled", true))
+            using (var host = CreateHostBuilder(args).Build())
             {
-                messagesHandlerService = Reporter.BindService(new ReportMessagesHandler(server, sender));
+                await host.StartAsync();
+
+                await host.WaitForShutdownAsync(ShutDownCancelationSource.Token);
             }
-            else
-            {
-                messagesHandlerService = Reporter.BindService(new EmptyMessagesHandler(server));
-            }
-            server.Services.Add(messagesHandlerService);
-
-            var gaugePort = server.Ports.Add(new ServerPort("localhost", 0, ServerCredentials.Insecure));
-            server.Start();
-
-            Console.Write($"Listening on port:{gaugePort}");
-
-            TraceLogger.Info("Server has started.");
-
-            await server.ShutdownTask;
         }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+           Host.CreateDefaultBuilder(args)
+               .ConfigureWebHostDefaults(webBuilder =>
+               {
+                   webBuilder.ConfigureLogging(logging => logging.SetMinimumLevel(LogLevel.Error));
+
+                   webBuilder.UseKestrel(options =>
+                   {
+                       options.Listen(IPAddress.Loopback,
+                           0,
+                           listenOptions => listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2);
+                   })
+                   .UseStartup<Startup>();
+               });
     }
 }

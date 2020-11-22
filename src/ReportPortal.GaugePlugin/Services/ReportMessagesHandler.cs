@@ -6,20 +6,16 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace ReportPortal.GaugePlugin
+namespace ReportPortal.GaugePlugin.Services
 {
     class ReportMessagesHandler : Reporter.ReporterBase
     {
         private static readonly ITraceLogger TraceLogger = TraceLogManager.Instance.GetLogger<ReportMessagesHandler>();
 
-        private Server _server;
-
         private Sender _sender;
 
-        public ReportMessagesHandler(Server server, Sender sender)
+        public ReportMessagesHandler(Sender sender)
         {
-            _server = server;
-
             _sender = sender;
         }
 
@@ -188,7 +184,7 @@ namespace ReportPortal.GaugePlugin
             return Task.FromResult(new Empty());
         }
 
-        public override async Task<Empty> Kill(KillProcessRequest request, ServerCallContext context)
+        public override Task<Empty> Kill(KillProcessRequest request, ServerCallContext context)
         {
 
             TraceLogger.Info("Kill received");
@@ -206,11 +202,11 @@ namespace ReportPortal.GaugePlugin
                     Console.WriteLine($"Unexpected errors: {exp}");
                 }
 
-                return new Empty();
+                return Task.FromResult(new Empty());
             }
             finally
             {
-                await _server.KillAsync();
+                Program.ShutDownCancelationSource.Cancel();
             }
         }
     }

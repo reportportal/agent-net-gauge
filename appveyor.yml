@@ -20,9 +20,9 @@ dotnet_csproj:
 
 build_script:
 - cmd: >-
-    dotnet publish -c %configuration% -r %runtime% /p:PublishTrimmed=true
+    dotnet publish -c %configuration% -r %runtime% -p:PublishTrimmed=true -p:PublishSingleFile=true /p:IncludeAllContentForSelfExtract=true
 
-    7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./src/ReportPortal.GaugePlugin/bin/%configuration%/netcoreapp3.1/%runtime%/publish/*
+    7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./src/ReportPortal.GaugePlugin/bin/%configuration%/net5.0/%runtime%/publish/*
 
 artifacts:
   - path: '**/.zip'
