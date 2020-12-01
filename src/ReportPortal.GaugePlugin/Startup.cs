@@ -16,7 +16,10 @@ namespace ReportPortal.GaugePlugin
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
+            services.AddGrpc(options =>
+            {
+                options.MaxReceiveMessageSize = null;
+            });
 
             services.AddSingleton(s =>
             {
