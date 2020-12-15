@@ -19,6 +19,7 @@ rp_uuid = 7853c7a9-7f27-43ea-835a-cab01355fd17
 rp_launch_name = My Super Project
 rp_launch_description = This is description
 rp_launch_attributes = tag1; tag2; platform:x64
+rp_launch_debugmode = true/false
 
 rp_enabled = true/false
 ```
@@ -29,7 +30,7 @@ Modify your `manifest.json` file and add `reportportal` plugin into plugins list
 
 # Upgrading after Preview version
 
-If you have already installed previe version and want to install stable version, firstly you need uninstall plugin and install it again.
+If you have already installed preview version and want to install stable version, firstly you need uninstall plugin and install it again.
 
 > gauge uninstall reportportal
 
