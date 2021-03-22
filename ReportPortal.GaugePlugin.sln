@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportPortal.GaugePlugin", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{71DFDD0D-32DC-4143-9FF6-11F0EE7A9542}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CD0F8328-87FA-4DB9-8A9A-881A6FE83C55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportPortal.GaugePlugin.IntegrationTests", "test\ReportPortal.GaugePlugin.IntegrationTests\ReportPortal.GaugePlugin.IntegrationTests.csproj", "{DE434D03-64F3-46D2-AE8F-C4947DB1E6FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +21,17 @@ Global
 		{59F8DC9E-A696-4CB9-AE87-572347A03AE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59F8DC9E-A696-4CB9-AE87-572347A03AE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59F8DC9E-A696-4CB9-AE87-572347A03AE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE434D03-64F3-46D2-AE8F-C4947DB1E6FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE434D03-64F3-46D2-AE8F-C4947DB1E6FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE434D03-64F3-46D2-AE8F-C4947DB1E6FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE434D03-64F3-46D2-AE8F-C4947DB1E6FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{59F8DC9E-A696-4CB9-AE87-572347A03AE3} = {71DFDD0D-32DC-4143-9FF6-11F0EE7A9542}
+		{DE434D03-64F3-46D2-AE8F-C4947DB1E6FA} = {CD0F8328-87FA-4DB9-8A9A-881A6FE83C55}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F8BB8E18-EEC7-4B52-8B3F-80B118CC6E48}

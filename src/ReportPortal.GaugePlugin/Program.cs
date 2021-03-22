@@ -51,7 +51,7 @@ namespace ReportPortal.GaugePlugin
                            0,
                            listenOptions => listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2);
 
-                       options.Limits.MaxRequestBodySize = null;
+                       options.Limits.MaxRequestBodySize = long.MaxValue;
                    })
                    .UseStartup<Startup>();
                });
