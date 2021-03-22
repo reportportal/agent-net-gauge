@@ -201,6 +201,17 @@ namespace ReportPortal.GaugePlugin.Services
                 {
                     Console.WriteLine($"Unexpected errors: {exp}");
                 }
+                finally
+                {
+                    if (_sender != null)
+                    {
+                        var statsMessage = _sender.StatisticsCounter.ToString();
+
+                        TraceLogger.Info(statsMessage);
+
+                        Console.WriteLine(statsMessage);
+                    }
+                }
 
                 return Task.FromResult(new Empty());
             }
