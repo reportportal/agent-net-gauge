@@ -1,6 +1,7 @@
 ﻿using Gauge.Messages;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Converters;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Reporter;
 using System;
@@ -40,7 +41,7 @@ namespace ReportPortal.GaugePlugin.Results
                     Name = specResult.ProtoSpec.SpecHeading,
                     Description = string.Join("", specResult.ProtoSpec.Items.Where(i => i.ItemType == ProtoItem.Types.ItemType.Comment).Select(c => c.Comment.Text)),
                     StartTime = DateTime.UtcNow,
-                    Attributes = specResult.ProtoSpec.Tags.Select(t => ConvertTagToAttribute(t)).ToList()
+                    Attributes = specResult.ProtoSpec.Tags.Select(t => new ItemAttributeConverter().ConvertFrom(t, opts => opts.UndefinedKey = "tag")).ToList()
                 });
 
                 // pre hook messages

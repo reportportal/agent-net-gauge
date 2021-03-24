@@ -39,36 +39,5 @@ namespace ReportPortal.GaugePlugin.Results
 
             _gaugeScreenshotsDir = Environment.GetEnvironmentVariable("gauge_screenshots_dir");
         }
-
-        /// <summary>
-        /// Translate string to ItemAttribute
-        /// 
-        /// component:search =>     key=component, value=search
-        /// :search                 key=, value=search
-        /// search:                 key=, value=search
-        /// 
-        /// Attribute value always should not be empty.
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <returns></returns>
-        private ItemAttribute ConvertTagToAttribute(string tag)
-        {
-            var attr = new ItemAttribute();
-
-            var values = tag.Split(':');
-
-            if (values.Length == 1 || string.IsNullOrEmpty(values[1]))
-            {
-                attr.Key = "tag";
-                attr.Value = tag;
-            }
-            else
-            {
-                attr.Key = values[0];
-                attr.Value = tag.Substring(values[0].Length + 1);
-            }
-
-            return attr;
-        }
     }
 }

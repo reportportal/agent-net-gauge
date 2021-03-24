@@ -1,6 +1,8 @@
 ﻿using Gauge.Messages;
+using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Reporter;
+using ReportPortal.Shared.Reporter.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,7 @@ namespace ReportPortal.GaugePlugin.Results
                 if (_launch == null)
                 {
                     var suiteExecutionResult = request.SuiteResult;
+                    var isDebug = _configuration.GetValue("Launch:DebugMode", false);
 
                     // deffer starting of launch
                     _startLaunchRequest = new StartLaunchRequest
@@ -31,7 +34,8 @@ namespace ReportPortal.GaugePlugin.Results
                         Name = _configuration.GetValue("Launch:Name", suiteExecutionResult.ProjectName),
                         Description = _configuration.GetValue("Launch:Description", string.Empty),
                         Attributes = _configuration.GetKeyValues("Launch:Attributes", new List<KeyValuePair<string, string>>()).Select(a => new Client.Abstractions.Models.ItemAttribute { Key = a.Key, Value = a.Value }).ToList(),
-                        StartTime = DateTime.UtcNow
+                        Mode = isDebug ? LaunchMode.Debug : LaunchMode.Default,
+                        StartTime = DateTime.UtcNow                        
                     };
                 }
 
@@ -63,6 +67,14 @@ namespace ReportPortal.GaugePlugin.Results
                 {
                     _launch.Sync();
                 }
+            }
+        }
+
+        public ILaunchStatisticsCounter StatisticsCounter
+        {
+            get
+            {
+                return _launch.StatisticsCounter;
             }
         }
     }

@@ -63,10 +63,13 @@ namespace ReportPortal.GaugePlugin
         {
             var addressFeature = features.Get<IServerAddressesFeature>();
 
-            foreach (var address in addressFeature.Addresses)
+            if (addressFeature != null)
             {
-                var gaugePort = int.Parse(address.Split(":").Last());
-                Console.WriteLine($"Listening on port:{gaugePort}");
+                foreach (var address in addressFeature.Addresses)
+                {
+                    var gaugePort = int.Parse(address.Split(":").Last());
+                    Console.WriteLine($"Listening on port:{gaugePort}");
+                }
             }
         }
     }

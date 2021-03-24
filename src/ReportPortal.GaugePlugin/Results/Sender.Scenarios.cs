@@ -1,6 +1,7 @@
 ﻿using Gauge.Messages;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Converters;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Concurrent;
@@ -56,9 +57,9 @@ namespace ReportPortal.GaugePlugin.Results
                 scenarioRequestParameters.Add(new KeyValuePair<string, string>(paramName, paramValue));
             }
 
-            var attributes = scenario.Tags.Select(t => ConvertTagToAttribute(t)).ToList();
+            var attributes = scenario.Tags.Select(t => new ItemAttributeConverter().ConvertFrom(t, opts => opts.UndefinedKey = "tag")).ToList();
             // inherit scenario tags from specification
-            attributes.AddRange(request.CurrentExecutionInfo.CurrentSpec.Tags.Select(t => ConvertTagToAttribute(t)).ToList());
+            attributes.AddRange(request.CurrentExecutionInfo.CurrentSpec.Tags.Select(t => new ItemAttributeConverter().ConvertFrom(t, opts => opts.UndefinedKey = "tag")).ToList());
 
             var startTestItemRequest = new StartTestItemRequest
             {
