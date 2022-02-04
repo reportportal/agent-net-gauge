@@ -194,8 +194,10 @@ namespace ReportPortal.GaugePlugin.Services
                 {
                     Console.Write("Finishing to send results to Report Portal... ");
                     var sw = Stopwatch.StartNew();
+                    
                     _sender.Sync();
-                    Console.WriteLine($"Successfully sent. Elapsed: {sw.Elapsed}");
+
+                    Console.WriteLine($"Successfully sent at {_sender.LaunchReporter.Info.Url} Elapsed: {sw.Elapsed}");
                 }
                 catch (Exception exp)
                 {
@@ -210,7 +212,6 @@ namespace ReportPortal.GaugePlugin.Services
                         TraceLogger.Info(statsMessage);
 
                         Console.WriteLine(statsMessage);
-                        Console.WriteLine($"Explore it at {_sender.LaunchReporter.Info.Url}");
                     }
                 }
 
