@@ -12,7 +12,7 @@ namespace ReportPortal.GaugePlugin.Services
     {
         private static readonly ITraceLogger TraceLogger = TraceLogManager.Instance.GetLogger<ReportMessagesHandler>();
 
-        private Sender _sender;
+        private readonly Sender _sender;
 
         public ReportMessagesHandler(Sender sender)
         {
@@ -199,17 +199,18 @@ namespace ReportPortal.GaugePlugin.Services
                 }
                 catch (Exception exp)
                 {
-                    Console.WriteLine($"Unexpected errors: {exp}");
+                    Console.WriteLine($"Unexpected error: {exp}");
                 }
                 finally
                 {
                     if (_sender != null)
                     {
-                        var statsMessage = _sender.StatisticsCounter.ToString();
+                        var statsMessage = _sender.LaunchReporter.StatisticsCounter.ToString();
 
                         TraceLogger.Info(statsMessage);
 
                         Console.WriteLine(statsMessage);
+                        Console.WriteLine($"Explore it at {_sender.LaunchReporter.Info.Url}");
                     }
                 }
 

@@ -1,4 +1,4 @@
-image: Visual Studio 2019
+image: Visual Studio 2022
 
 install:
   - ps: dotnet tool install GitVersion.Tool -g
@@ -22,9 +22,9 @@ build_script:
 - cmd: >-
     dotnet test
 
-    dotnet publish src/ReportPortal.GaugePlugin/ReportPortal.GaugePlugin.csproj -c %configuration% -r %runtime% -p:PublishTrimmed=true -p:PublishSingleFile=true /p:IncludeAllContentForSelfExtract=true
+    dotnet publish src/ReportPortal.GaugePlugin/ReportPortal.GaugePlugin.csproj -c %configuration% -r %runtime% --self-contained true
 
-    7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./src/ReportPortal.GaugePlugin/bin/%configuration%/net5.0/%runtime%/publish/*
+    7z a reportportal-%GitVersion_SemVer%-%runtime%.zip ./src/ReportPortal.GaugePlugin/bin/%configuration%/net6.0/%runtime%/publish/*
 
 artifacts:
   - path: '**/.zip'

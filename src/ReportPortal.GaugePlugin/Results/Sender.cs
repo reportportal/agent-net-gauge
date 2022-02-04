@@ -10,11 +10,11 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private static ITraceLogger TraceLogger = TraceLogManager.Instance.GetLogger<Sender>();
+        private static readonly ITraceLogger TraceLogger = TraceLogManager.Instance.GetLogger<Sender>();
 
-        private static Dictionary<ExecutionStatus, Status> _statusMap;
+        private static readonly Dictionary<ExecutionStatus, Status> _statusMap;
 
-        private string _gaugeScreenshotsDir;
+        private readonly string _gaugeScreenshotsDir;
 
         private IClientService _service;
         private IConfiguration _configuration;
@@ -29,7 +29,7 @@ namespace ReportPortal.GaugePlugin.Results
                 { ExecutionStatus.Skipped, Status.Skipped }
             };
 
-            Shared.Extensibility.Analytics.AnalyticsReportEventsObserver.DefineConsumer("agent-dotnet-gauge");
+            Shared.Extensibility.Embedded.Analytics.AnalyticsReportEventsObserver.DefineConsumer("agent-dotnet-gauge");
         }
 
         public Sender(IClientService service, IConfiguration configuration)

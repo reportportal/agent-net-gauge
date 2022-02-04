@@ -11,7 +11,7 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private object _lockObj = new object();
+        private readonly object _lockObj = new();
 
         private int _launchesCount;
 
@@ -70,12 +70,7 @@ namespace ReportPortal.GaugePlugin.Results
             }
         }
 
-        public ILaunchStatisticsCounter StatisticsCounter
-        {
-            get
-            {
-                return _launch.StatisticsCounter;
-            }
-        }
+        public ILaunchReporter LaunchReporter => _launch;
+
     }
 }

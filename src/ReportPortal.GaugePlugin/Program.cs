@@ -14,7 +14,7 @@ namespace ReportPortal.GaugePlugin
     {
         private static ITraceLogger TraceLogger;
 
-        public static CancellationTokenSource ShutDownCancelationSource = new CancellationTokenSource();
+        public static CancellationTokenSource ShutDownCancelationSource = new();
 
         static async Task Main(string[] args)
         {
