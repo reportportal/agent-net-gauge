@@ -186,7 +186,6 @@ namespace ReportPortal.GaugePlugin.Services
 
         public override Task<Empty> Kill(KillProcessRequest request, ServerCallContext context)
         {
-
             TraceLogger.Info("Kill received");
             try
             {

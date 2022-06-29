@@ -2,7 +2,6 @@
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Reporter;
-using ReportPortal.Shared.Reporter.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
