@@ -12,7 +12,7 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private ConcurrentDictionary<string, ITestReporter> _scenarios = new ConcurrentDictionary<string, ITestReporter>();
+        private readonly ConcurrentDictionary<ScenarioKey, ITestReporter> _scenarios = new();
 
         public void StartScenario(ScenarioExecutionStartingRequest request)
         {
@@ -153,9 +153,11 @@ namespace ReportPortal.GaugePlugin.Results
             _scenarios.TryRemove(key, out _);
         }
 
-        private string GetScenarioKey(ExecutionInfo executionInfo, SpecInfo specInfo, ScenarioInfo scenarioInfo)
+        private ScenarioKey GetScenarioKey(ExecutionInfo executionInfo, SpecInfo specInfo, ScenarioInfo scenarioInfo)
         {
-            return System.Text.Json.JsonSerializer.Serialize(new { Spec = GetSpecKey(executionInfo, specInfo), ScenarioName = scenarioInfo.Name });
+            return new ScenarioKey(GetSpecKey(executionInfo, specInfo), scenarioInfo.Name);
         }
+
+        record ScenarioKey(SpecKey SpecKey, string Name);
     }
 }

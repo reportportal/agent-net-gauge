@@ -11,7 +11,7 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private ConcurrentDictionary<string, ITestReporter> _steps = new ConcurrentDictionary<string, ITestReporter>();
+        private readonly ConcurrentDictionary<StepKey, ITestReporter> _steps = new();
 
         public void StartStep(StepExecutionStartingRequest request)
         {
@@ -177,10 +177,12 @@ namespace ReportPortal.GaugePlugin.Results
             _steps.TryRemove(key, out _);
         }
 
-        private string GetStepKey(ExecutionInfo executionInfo, SpecInfo specInfo, ScenarioInfo scenarioInfo, StepInfo stepInfo)
+        private StepKey GetStepKey(ExecutionInfo executionInfo, SpecInfo specInfo, ScenarioInfo scenarioInfo, StepInfo stepInfo)
         {
-            return System.Text.Json.JsonSerializer.Serialize(new { Scenario = GetScenarioKey(executionInfo, specInfo, scenarioInfo), StepName = stepInfo.Step.ActualStepText });
+            return new StepKey(GetScenarioKey(executionInfo, specInfo, scenarioInfo), stepInfo.Step.ActualStepText);
         }
+
+        record StepKey(ScenarioKey ScenarioKey, string Name);
 
         private void AttachScreenshot(String screenshotFile, LogLevel logLevel, ITestReporter stepReporter)
         {
@@ -206,6 +208,6 @@ namespace ReportPortal.GaugePlugin.Results
             {
                 TraceLogger.Error($"Couldn't parse step screenshot. {exp}");
             }
-        }		
+        }
     }
 }

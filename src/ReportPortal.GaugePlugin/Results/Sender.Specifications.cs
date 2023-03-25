@@ -12,7 +12,7 @@ namespace ReportPortal.GaugePlugin.Results
 {
     partial class Sender
     {
-        private ConcurrentDictionary<string, ITestReporter> _specs = new ConcurrentDictionary<string, ITestReporter>();
+        private readonly ConcurrentDictionary<SpecKey, ITestReporter> _specs = new();
 
         public void StartSpec(SpecExecutionStartingRequest request)
         {
@@ -113,9 +113,11 @@ namespace ReportPortal.GaugePlugin.Results
             _specs.TryRemove(key, out _);
         }
 
-        private string GetSpecKey(ExecutionInfo executionInfo, SpecInfo specInfo)
+        private SpecKey GetSpecKey(ExecutionInfo executionInfo, SpecInfo specInfo)
         {
-            return System.Text.Json.JsonSerializer.Serialize(new { specInfo.Name, specInfo.FileName, executionInfo.RunnerId });
+            return new SpecKey(specInfo.Name, specInfo.FileName, executionInfo.RunnerId);
         }
+
+        record SpecKey(string name, string FileName, int RunnerId);
     }
 }
