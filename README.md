@@ -1,16 +1,20 @@
 # Installation
 
-> gauge install reportportal
+```bash
+gauge install reportportal
+```
 
 Or manually download plugin from [releases](https://github.com/reportportal/agent-net-gauge/releases) tab.
 
 And then:
-> gauge install reportportal --file <path_to_plugin_zip_file>
+```bash
+gauge install reportportal --file <path_to_plugin_zip_file>
+```
 
 # Configuration
 
-In you project add the following properties into `env/default/default.properties` file:
-```yml
+Add the following properties into `env/default/default.properties` file:
+```properties
 rp_url = https://demo.reportportal.io
 rp_project = default_project
 rp_uuid = 7853c7a9-7f27-43ea-835a-cab01355fd17
@@ -32,7 +36,9 @@ Modify your `manifest.json` file and add `reportportal` plugin into plugins list
 
 If you have already installed preview version and want to install stable version, firstly you need uninstall plugin and install it again.
 
-> gauge uninstall reportportal
+```bash
+gauge uninstall reportportal
+```
 
 # Troubleshooting
 
