@@ -11,7 +11,7 @@ And then:
 
 In you project add the following properties into `env/default/default.properties` file:
 ```yml
-rp_uri = https://rp.epam.com/api/v1
+rp_url = https://demo.reportportal.io
 rp_project = default_project
 rp_uuid = 7853c7a9-7f27-43ea-835a-cab01355fd17
 

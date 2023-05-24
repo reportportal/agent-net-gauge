@@ -16,7 +16,7 @@ namespace ReportPortal.GaugePlugin.Services
 
         public IClientService Create()
         {
-            var rpUri = _configuration.GetValue<string>("Uri");
+            var rpUri = _configuration.GetValue<string>("Uri", null) ?? _configuration.GetValue<string>("Url");
             var rpProject = _configuration.GetValue<string>("Project");
             var rpApiToken = _configuration.GetValue<string>("Uuid");
             return new Service(new Uri(rpUri), rpProject, rpApiToken);
