@@ -20,7 +20,10 @@ namespace ReportPortal.GaugePlugin.Results
             {
                 if (_launch == null)
                 {
-                    var launchReporter = new LaunchReporter(_service, _configuration, null, ExtensionManager.Instance);
+                    var extensionManager = new ExtensionManager();
+                    extensionManager.Explore(AppContext.BaseDirectory);
+
+                    var launchReporter = new LaunchReporter(_service, _configuration, null, extensionManager);
 
                     // if execution is rerun
                     if (request.CurrentExecutionInfo.ExecutionArgs.Any(arg => arg.FlagName.ToLowerInvariant() == "failed"))

@@ -24,8 +24,8 @@ namespace ReportPortal.GaugePlugin
             services.AddSingleton(s =>
             {
                 return new ConfigurationBuilder()
-                  .Add(new EnvironmentVariablesConfigurationProvider("RP_", "_", EnvironmentVariableTarget.Process))
-                  .Build();
+                    .AddEnvironmentVariables()
+                    .Build();
             });
 
             services.AddSingleton<ReportPortalApiClientFactory>();

@@ -1,0 +1,61 @@
+name: CI
+
+on: push
+
+jobs:
+
+  Build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build
+        run: dotnet build
+
+      - name: Publish
+        run: dotnet publish
+
+  Pack:
+    needs: Build
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux-x64
+          - os: ubuntu-latest
+            platform: linux-musl-x64
+          - os: windows-latest
+            platform: win-x64
+          - os: windows-latest
+            platform: win-arm64
+          - os: macos-latest
+            platform: osx-x64
+          - os: macos-latest
+            platform: osx-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Publish
+        run: dotnet publish -r ${{ matrix.platform }} --self-contained
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}
+          path: '**/*.zip'
+          compression-level: 0
+

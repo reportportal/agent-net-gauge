@@ -5,6 +5,7 @@ using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Internal.Logging;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ReportPortal.GaugePlugin.Results
 {
@@ -16,8 +17,8 @@ namespace ReportPortal.GaugePlugin.Results
 
         private readonly string _gaugeScreenshotsDir;
 
-        private IClientService _service;
-        private IConfiguration _configuration;
+        private readonly IClientService _service;
+        private readonly IConfiguration _configuration;
 
         static Sender()
         {
@@ -29,7 +30,7 @@ namespace ReportPortal.GaugePlugin.Results
                 { ExecutionStatus.Skipped, Status.Skipped }
             };
 
-            Shared.Extensibility.Embedded.Analytics.AnalyticsReportEventsObserver.DefineConsumer("agent-dotnet-gauge");
+            Shared.Extensibility.Embedded.Analytics.AnalyticsReportEventsObserver.DefineConsumer("agent-dotnet-gauge", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
         }
 
         public Sender(IClientService service, IConfiguration configuration)

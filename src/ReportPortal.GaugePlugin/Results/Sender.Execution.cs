@@ -64,7 +64,14 @@ namespace ReportPortal.GaugePlugin.Results
             {
                 if (_launchesCount == 0)
                 {
-                    _launch.Sync();
+                    if (_launch is null)
+                    {
+                        throw new NullReferenceException("Launch cannot be null. Check logs folder to find potential problems.");
+                    }
+                    else
+                    {
+                        _launch.Sync();
+                    }
                 }
             }
         }

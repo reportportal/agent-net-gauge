@@ -2,30 +2,34 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-	  <Version>1.0.0</Version>
+    <TargetFramework>net8.0</TargetFramework>
 
-    <PublishSingleFile>true</PublishSingleFile>
-    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-    <PublishTrimmed>true</PublishTrimmed>
-    
-    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+  
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.23.1" />
-    <PackageReference Include="Grpc.AspNetCore.Server" Version="2.53.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.54.0">
+    <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="ReportPortal.Shared" Version="3.5.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.25.2" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
+    <PackageReference Include="ReportPortal.Shared" Version="3.6.1" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="plugin.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
   </ItemGroup>
 
@@ -33,4 +37,8 @@
     <Protobuf Include="GrpcMessages\*.proto" ProtoRoot="GrpcMessages" GrpcServices="Both" />
   </ItemGroup>
 
+  <Target Name="ZipPublishDir" DependsOnTargets="GetVersion" AfterTargets="CopyNativeBinary">
+    <ZipDirectory SourceDirectory="$(PublishDir)" DestinationFile="$(OutputPath)\reportportal-$(GitVersion_SemVer)-$(RuntimeIdentifier).zip" Overwrite="true" />
+  </Target>
+  
 </Project>

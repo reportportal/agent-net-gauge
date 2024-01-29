@@ -24,7 +24,7 @@ namespace ReportPortal.GaugePlugin.Services
             try
             {
                 TraceLogger.Info($"{nameof(NotifyExecutionStarting)} received");
-                TraceLogger.Verbose(System.Text.Json.JsonSerializer.Serialize(request));
+                TraceLogger.Verbose(request.ToString());
 
                 if (request.SuiteResult != null)
                 {
@@ -44,7 +44,7 @@ namespace ReportPortal.GaugePlugin.Services
             try
             {
                 TraceLogger.Info($"{nameof(NotifyExecutionEnding)} received");
-                TraceLogger.Verbose(System.Text.Json.JsonSerializer.Serialize(request));
+                TraceLogger.Verbose(request.ToString());
 
                 if (request.SuiteResult != null)
                 {
@@ -64,7 +64,7 @@ namespace ReportPortal.GaugePlugin.Services
             try
             {
                 TraceLogger.Info($"{nameof(NotifySpecExecutionStarting)} received");
-                TraceLogger.Verbose(System.Text.Json.JsonSerializer.Serialize(request));
+                TraceLogger.Verbose(request.ToString());
 
                 if (request.SpecResult != null)
                 {
@@ -84,7 +84,7 @@ namespace ReportPortal.GaugePlugin.Services
             try
             {
                 TraceLogger.Info($"{nameof(NotifySpecExecutionEnding)} received");
-                TraceLogger.Verbose(System.Text.Json.JsonSerializer.Serialize(request));
+                TraceLogger.Verbose(request.ToString());
 
                 if (request.SpecResult != null)
                 {
@@ -104,7 +104,7 @@ namespace ReportPortal.GaugePlugin.Services
             try
             {
                 TraceLogger.Info($"{nameof(NotifyScenarioExecutionStarting)} received");
-                TraceLogger.Verbose(System.Text.Json.JsonSerializer.Serialize(request));
+                TraceLogger.Verbose(request.ToString());
 
                 if (request.ScenarioResult != null)
                 {
@@ -124,7 +124,7 @@ namespace ReportPortal.GaugePlugin.Services
             try
             {
                 TraceLogger.Info($"{nameof(NotifyScenarioExecutionEnding)} received");
-                TraceLogger.Verbose(System.Text.Json.JsonSerializer.Serialize(request));
+                TraceLogger.Verbose(request.ToString());
 
                 if (request.ScenarioResult != null)
                 {
@@ -144,7 +144,7 @@ namespace ReportPortal.GaugePlugin.Services
             try
             {
                 TraceLogger.Info($"{nameof(NotifyStepExecutionStarting)} received");
-                TraceLogger.Verbose(System.Text.Json.JsonSerializer.Serialize(request));
+                TraceLogger.Verbose(request.ToString());
 
                 if (request.StepResult != null)
                 {
@@ -164,7 +164,7 @@ namespace ReportPortal.GaugePlugin.Services
             try
             {
                 TraceLogger.Info($"{nameof(NotifyStepExecutionEnding)} received");
-                TraceLogger.Verbose(System.Text.Json.JsonSerializer.Serialize(request));
+                TraceLogger.Verbose(request.ToString());
 
                 if (request.StepResult != null)
                 {
