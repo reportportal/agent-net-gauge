@@ -1,3 +1,7 @@
+Report Portal plugin for [Gauge](https://gauge.org) test automation framework to report test results in real-time.
+
+[![CI](https://github.com/reportportal/agent-net-gauge/actions/workflows/ci.yml/badge.svg)](https://github.com/reportportal/agent-net-gauge/actions/workflows/ci.yml)
+
 # Installation
 
 ```bash
