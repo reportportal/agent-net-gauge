@@ -27,18 +27,41 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="GrpcMessages\*.proto" ProtoRoot="GrpcMessages" GrpcServices="Both" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="plugin.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Protobuf Include="GrpcMessages\*.proto" ProtoRoot="GrpcMessages" GrpcServices="Both" />
-  </ItemGroup>
-
-  <Target Name="ZipPublishDir" DependsOnTargets="GetVersion" AfterTargets="CopyNativeBinary">
-    <ZipDirectory SourceDirectory="$(PublishDir)" DestinationFile="$(OutputPath)\reportportal-$(GitVersion_SemVer)-$(RuntimeIdentifier).zip" Overwrite="true" />
+  <Target Name="UpdatePluginManifest" AfterTargets="Build">
+    <TokenReplace Path="$(OutputPath)\plugin.json" Token="$version$" Replacement="$(GitVersion_MajorMinorPatch)" />
   </Target>
   
+  <Target Name="ZipPublishDir" DependsOnTargets="GetVersion;" AfterTargets="CopyNativeBinary">
+    <TokenReplace Path="$(PublishDir)\plugin.json" Token="$version$" Replacement="$(GitVersion_MajorMinorPatch)" />
+    <ZipDirectory SourceDirectory="$(PublishDir)" DestinationFile="$(OutputPath)\reportportal-$(GitVersion_SemVer)-$(RuntimeIdentifier).zip" Overwrite="true" />
+  </Target>
+
+  <UsingTask TaskName="TokenReplace" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Path ParameterType="System.String" Required="true" />
+      <Token ParameterType="System.String" Required="true" />
+      <Replacement ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+string content = File.ReadAllText(Path);
+content = content.Replace(Token, Replacement);
+File.WriteAllText(Path, content);
+
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
 </Project>
