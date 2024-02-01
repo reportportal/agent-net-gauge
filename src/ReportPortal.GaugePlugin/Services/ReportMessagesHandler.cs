@@ -146,7 +146,7 @@ namespace ReportPortal.GaugePlugin.Services
                 TraceLogger.Info($"{nameof(NotifyConceptExecutionStarting)} received");
                 TraceLogger.Verbose(request.ToString());
 
-                // do nothing for now
+                _sender.StartConcept(request);
             }
             catch (Exception exp)
             {
@@ -163,7 +163,7 @@ namespace ReportPortal.GaugePlugin.Services
                 TraceLogger.Info($"{nameof(NotifyConceptExecutionEnding)} received");
                 TraceLogger.Verbose(request.ToString());
 
-                // do nothing for now
+                _sender.FinishConcept(request);
             }
             catch (Exception exp)
             {
