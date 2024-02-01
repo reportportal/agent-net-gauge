@@ -19,9 +19,6 @@ jobs:
       - name: Build
         run: dotnet build
 
-      - name: Publish
-        run: dotnet publish
-
   Pack:
     needs: Build
     strategy:
