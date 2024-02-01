@@ -39,6 +39,16 @@ namespace ReportPortal.GaugePlugin.Services
             return Task.FromResult(new Empty());
         }
 
+        public override Task<Empty> NotifyConceptExecutionStarting(ConceptExecutionStartingRequest request, ServerCallContext context)
+        {
+            return Task.FromResult(new Empty());
+        }
+
+        public override Task<Empty> NotifyConceptExecutionEnding(ConceptExecutionEndingRequest request, ServerCallContext context)
+        {
+            return Task.FromResult(new Empty());
+        }
+
         public override Task<Empty> NotifyStepExecutionStarting(StepExecutionStartingRequest request, ServerCallContext context)
         {
             return Task.FromResult(new Empty());

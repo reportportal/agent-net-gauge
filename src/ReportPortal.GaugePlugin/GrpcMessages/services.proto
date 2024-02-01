@@ -1,7 +1,14 @@
+/*----------------------------------------------------------------
+ *  Copyright (c) ThoughtWorks, Inc.
+ *  Licensed under the Apache License, Version 2.0
+ *  See LICENSE in the project root for license information.
+ *----------------------------------------------------------------*/
+
 syntax = "proto3";
 package gauge.messages;
 option csharp_namespace = "Gauge.Messages";
 option java_package = "com.thoughtworks.gauge";
+option go_package = "github.com/getgauge/gauge-proto/go/gauge_messages";
 
 import "messages.proto";
 
@@ -135,6 +142,16 @@ service Reporter {
     //
     // Accepts a ScenarioExecutionStartingRequest message and returns a Empty message
     rpc NotifyScenarioExecutionStarting(ScenarioExecutionStartingRequest) returns (Empty);
+
+    // NotifyConceptExecutionStarting is a RPC to tell plugins that the concept execution has started.
+    //
+    // Accepts a ConceptExecutionStartingRequest message and returns a Empty message
+    rpc NotifyConceptExecutionStarting(ConceptExecutionStartingRequest) returns (Empty);
+
+    // NotifyConceptExecutionEnding is a RPC to tell plugins that the concept execution has finished.
+    //
+    // Accepts a ConceptExecutionEndingRequest message and returns a Empty message
+    rpc NotifyConceptExecutionEnding(ConceptExecutionEndingRequest) returns (Empty);
 
     // NotifyStepExecutionStarting is a RPC to tell plugins that the step execution has started.
     //

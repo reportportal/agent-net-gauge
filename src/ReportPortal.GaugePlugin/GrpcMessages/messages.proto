@@ -1,26 +1,15 @@
-// Copyright 2015 ThoughtWorks, Inc.
-
-// This file is part of gauge-proto.
-
-// gauge-proto is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// gauge-proto is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with gauge-proto.  If not, see <http://www.gnu.org/licenses/>.
-
+/*----------------------------------------------------------------
+ *  Copyright (c) ThoughtWorks, Inc.
+ *  Licensed under the Apache License, Version 2.0
+ *  See LICENSE in the project root for license information.
+ *----------------------------------------------------------------*/
 
 // The comments are exported to Markdown, hence they may contain markdown syntax and cross-refs.
 syntax = "proto3";
 package gauge.messages;
 option csharp_namespace = "Gauge.Messages";
 option java_package = "com.thoughtworks.gauge";
+option go_package = "github.com/getgauge/gauge-proto/go/gauge_messages";
 
 import "spec.proto";
 
@@ -110,6 +99,27 @@ message StepExecutionStartingRequest {
 
 /// Sent at end of Step Execution. Tells the runner to execute `after_step` hook.
 message StepExecutionEndingRequest {
+    /// Holds the current step execution info.
+    ExecutionInfo currentExecutionInfo = 1;
+    /// Holds step result in step execution ending.
+    gauge.messages.ProtoStepResult stepResult = 2;
+
+    int32 stream = 3;
+}
+
+/// Sent at start of Concept Execution.
+message ConceptExecutionStartingRequest {
+    /// Holds the current step execution info.
+    ExecutionInfo currentExecutionInfo = 1;
+    /// Holds step result in step execution starting.
+    /// Some fields will not be populated before execution.
+    gauge.messages.ProtoStepResult stepResult = 2;
+
+    int32 stream = 3;
+}
+
+/// Sent at end of Concept Execution.
+message ConceptExecutionEndingRequest {
     /// Holds the current step execution info.
     ExecutionInfo currentExecutionInfo = 1;
     /// Holds step result in step execution ending.
@@ -319,6 +329,8 @@ message StepNameResponse {
   string fileName = 4;
   /// Range of step
   gauge.messages.Span span = 5;
+  /// Flag indicating if the given Step defined in some external library and the source code can not be accessed.
+  bool isExternal = 6;
 }
 
 /// Response when a unsupported message request is sent.
@@ -483,6 +495,8 @@ message Message {
       ImplementationFileGlobPatternResponse = 32;
       SuiteExecutionResultItem = 33;
       KeepAlive = 34;
+      ConceptExecutionStarting = 35;
+      ConceptExecutionEnding = 36;
   }
 
   MessageType messageType = 1;
@@ -561,4 +575,8 @@ message Message {
   SuiteExecutionResultItem suiteExecutionResultItem = 36;
   /// [KeepAlive ](#gauge.messages.KeepAlive )
   KeepAlive keepAlive = 37;
+  /// [ConceptExecutionStartingRequest](#gauge.messages.ConceptExecutionStartingRequest)
+  ConceptExecutionStartingRequest conceptExecutionStartingRequest = 38;
+  /// [ConceptExecutionEndingRequest](#gauge.messages.ConceptExecutionEndingRequest)
+  ConceptExecutionEndingRequest conceptExecutionEndingRequest = 39;
 }

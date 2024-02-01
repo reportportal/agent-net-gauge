@@ -139,6 +139,40 @@ namespace ReportPortal.GaugePlugin.Services
             return Task.FromResult(new Empty());
         }
 
+        public override Task<Empty> NotifyConceptExecutionStarting(ConceptExecutionStartingRequest request, ServerCallContext context)
+        {
+            try
+            {
+                TraceLogger.Info($"{nameof(NotifyConceptExecutionStarting)} received");
+                TraceLogger.Verbose(request.ToString());
+
+                // do nothing for now
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error(exp.ToString());
+            }
+
+            return Task.FromResult(new Empty());
+        }
+
+        public override Task<Empty> NotifyConceptExecutionEnding(ConceptExecutionEndingRequest request, ServerCallContext context)
+        {
+            try
+            {
+                TraceLogger.Info($"{nameof(NotifyConceptExecutionEnding)} received");
+                TraceLogger.Verbose(request.ToString());
+
+                // do nothing for now
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error(exp.ToString());
+            }
+
+            return Task.FromResult(new Empty());
+        }
+
         public override Task<Empty> NotifyStepExecutionStarting(StepExecutionStartingRequest request, ServerCallContext context)
         {
             try
@@ -193,7 +227,7 @@ namespace ReportPortal.GaugePlugin.Services
                 {
                     Console.Write("Finishing to send results to Report Portal... ");
                     var sw = Stopwatch.StartNew();
-                    
+
                     _sender.Sync();
 
                     Console.WriteLine($"Successfully sent at {_sender.LaunchReporter.Info.Url} Elapsed: {sw.Elapsed}");

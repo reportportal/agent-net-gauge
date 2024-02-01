@@ -1,23 +1,14 @@
-// Copyright 2015 ThoughtWorks, Inc.
+/*----------------------------------------------------------------
+ *  Copyright (c) ThoughtWorks, Inc.
+ *  Licensed under the Apache License, Version 2.0
+ *  See LICENSE in the project root for license information.
+ *----------------------------------------------------------------*/
 
-// This file is part of gauge-proto.
-
-// gauge-proto is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// gauge-proto is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with gauge-proto.  If not, see <http://www.gnu.org/licenses/>.
 syntax = "proto3";
 package gauge.messages;
 option csharp_namespace = "Gauge.Messages";
 option java_package = "com.thoughtworks.gauge";
+option go_package = "github.com/getgauge/gauge-proto/go/gauge_messages";
 
 // The comments are exported to Markdown, hence they may contain markdown syntax and cross-refs.
 
@@ -147,6 +138,8 @@ message ProtoScenario {
     repeated string preHookScreenshotFiles = 21;
     /// Screenshots captured on post hook exec time to be available on reports
     repeated string postHookScreenshotFiles = 22;
+    /// Number of retires
+    int64 retriesCount = 23;
 }
 
 /// A proto object representing a Span of content
