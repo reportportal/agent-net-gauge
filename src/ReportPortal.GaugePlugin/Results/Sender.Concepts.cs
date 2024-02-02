@@ -20,7 +20,7 @@ namespace ReportPortal.GaugePlugin.Results
         {
             var scenarioKey = GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
 
-            var parentReporter = _scenarioConcepts.ContainsKey(scenarioKey) ? _scenarioConcepts[scenarioKey].Last() : _scenarios[scenarioKey];
+            var parentReporter = _scenarioConcepts.TryGetValue(scenarioKey, out var concepts) ? concepts.Last() : _scenarios[scenarioKey];
 
             var conceptReporter = parentReporter.StartChildTestReporter(new StartTestItemRequest
             {
@@ -29,7 +29,7 @@ namespace ReportPortal.GaugePlugin.Results
                 HasStats = false
             });
 
-            if (_scenarioConcepts.TryGetValue(scenarioKey, out List<ITestReporter> concepts))
+            if (concepts is not null)
             {
                 concepts.Add(conceptReporter);
             }
