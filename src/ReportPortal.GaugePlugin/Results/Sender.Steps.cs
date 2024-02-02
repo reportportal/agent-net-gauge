@@ -27,16 +27,6 @@ namespace ReportPortal.GaugePlugin.Results
 
             var stepName = request.CurrentExecutionInfo.CurrentStep.Step.GetStepName();
 
-            #region step parameter
-            if (stepResult.ProtoItem.Step.Fragments != null)
-            {
-                foreach (var fragment in stepResult.ProtoItem.Step.Fragments.Where(f => f.FragmentType == Fragment.Types.FragmentType.Parameter && f.Parameter.ParameterType == Parameter.Types.ParameterType.Dynamic))
-                {
-                    stepName = stepName.Replace($"<{fragment.Parameter.Name}>", $"\"{fragment.Parameter.Value}\"");
-                }
-            }
-            #endregion
-
             var stepReporter = parentReporter.StartChildTestReporter(new StartTestItemRequest
             {
                 Type = TestItemType.Step,
@@ -45,39 +35,17 @@ namespace ReportPortal.GaugePlugin.Results
                 HasStats = false
             });
 
-            #region step table
-            //if step argument is table
+            // if step argument is table
             var tableParameter = stepResult.ProtoItem.Step.Fragments.FirstOrDefault(f => f.Parameter?.Table != null)?.Parameter.Table;
             if (tableParameter != null)
             {
-                var text = "| **" + string.Join("** | **", tableParameter.Headers.Cells.ToArray()) + "** |";
-                text += Environment.NewLine + "| " + string.Join(" | ", tableParameter.Headers.Cells.Select(c => "---")) + " |";
-
-                foreach (var tableRow in tableParameter.Rows)
-                {
-                    text += Environment.NewLine + "| " + string.Join(" | ", tableRow.Cells.ToArray()) + " |";
-                }
-
                 stepReporter.Log(new CreateLogItemRequest
                 {
                     Time = DateTime.UtcNow,
                     Level = LogLevel.Info,
-                    Text = text
+                    Text = tableParameter.AsMarkdown()
                 });
             }
-
-            // if dynamic arguments
-            var dynamicParameteres = stepResult.ProtoItem.Step.Fragments.Where(f => f.FragmentType == Fragment.Types.FragmentType.Parameter && f.Parameter.ParameterType == Parameter.Types.ParameterType.Dynamic).Select(f => f.Parameter);
-            if (dynamicParameteres.Count() != 0)
-            {
-                var text = "";
-
-                foreach (var dynamicParameter in dynamicParameteres)
-                {
-                    text += $"{Environment.NewLine}{dynamicParameter.Name}: {dynamicParameter.Value}";
-                }
-            }
-            #endregion
 
             // pre hook messages
             if (stepResult.ProtoItem.Step.PreHookMessages.Count != 0)

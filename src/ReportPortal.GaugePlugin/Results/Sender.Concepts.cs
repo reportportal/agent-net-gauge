@@ -38,6 +38,19 @@ namespace ReportPortal.GaugePlugin.Results
             {
                 _scenarioConcepts[scenarioKey] = [conceptReporter];
             }
+
+            // if concept argument is table
+            var table = request.CurrentExecutionInfo.CurrentStep.Step.Parameters?.FirstOrDefault(p => p.ParameterType == Parameter.Types.ParameterType.Table)?.Table;
+
+            if (table != null)
+            {
+                conceptReporter.Log(new CreateLogItemRequest
+                {
+                    Time = DateTime.UtcNow,
+                    Level = LogLevel.Info,
+                    Text = table.AsMarkdown()
+                });
+            }
         }
 
         public void FinishConcept(ConceptExecutionEndingRequest request)
