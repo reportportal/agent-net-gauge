@@ -24,7 +24,7 @@ namespace ReportPortal.GaugePlugin.Results
 
             var conceptReporter = parentReporter.StartChildTestReporter(new StartTestItemRequest
             {
-                Name = request.CurrentExecutionInfo.CurrentStep.Step.ParsedStepText,
+                Name = request.CurrentExecutionInfo.CurrentStep.Step.ActualStepText,
                 StartTime = DateTime.UtcNow,
                 HasStats = false
             });
