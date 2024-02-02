@@ -21,9 +21,11 @@ namespace ReportPortal.GaugePlugin.Results
             var key = GetStepKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario, request.CurrentExecutionInfo.CurrentStep);
             TraceLogger.Verbose($"Starting step with key: {key}");
 
-            var scenarioReporter = _scenarios[GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario)];
+            var scenarioKey = GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
 
-            var stepName = stepResult.ProtoItem.Step.GetStepName();
+            var parentReporter = _scenarioConcepts.TryGetValue(scenarioKey, out System.Collections.Generic.List<ITestReporter> concept) ? concept.Last() : _scenarios[scenarioKey];
+
+            var stepName = request.CurrentExecutionInfo.CurrentStep.Step.GetStepName();
 
             #region step parameter
             if (stepResult.ProtoItem.Step.Fragments != null)
@@ -35,7 +37,7 @@ namespace ReportPortal.GaugePlugin.Results
             }
             #endregion
 
-            var stepReporter = scenarioReporter.StartChildTestReporter(new StartTestItemRequest
+            var stepReporter = parentReporter.StartChildTestReporter(new StartTestItemRequest
             {
                 Type = TestItemType.Step,
                 StartTime = DateTime.UtcNow,

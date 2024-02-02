@@ -1,32 +1,28 @@
 ﻿using Gauge.Messages;
-using System.Text;
 
 namespace ReportPortal.GaugePlugin.Extensions
 {
     internal static class StepNameExtensions
     {
-        public static string GetStepName(this ProtoStep step)
+        public static string GetStepName(this ExecuteStepRequest step)
         {
-            if (step.Fragments is not null)
+            if (step.Parameters is not null)
             {
-                var stepNameBuilder = new StringBuilder();
+                var stepName = step.ParsedStepText;
 
-                foreach (var fragment in step.Fragments)
+                foreach (var parameter in step.Parameters)
                 {
-                    if (fragment.FragmentType == Fragment.Types.FragmentType.Text)
-                    {
-                        stepNameBuilder.Append(fragment.Text);
-                    }
-                    else if (fragment.FragmentType == Fragment.Types.FragmentType.Parameter)
-                    {
-                        stepNameBuilder.AppendFormat("`{0}`", fragment.Parameter.Value);
-                    }
+                    var startIndex = stepName.IndexOf("{}");
+
+                    stepName = stepName.Remove(startIndex, 2).Insert(startIndex, $"`{parameter.Value}`");
                 }
 
-                return stepNameBuilder.ToString();
+                return stepName;
             }
-
-            return step.ActualText;
+            else
+            {
+                return step.ActualStepText;
+            }
         }
     }
 }
