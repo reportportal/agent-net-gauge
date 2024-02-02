@@ -1,6 +1,7 @@
 ﻿using Gauge.Messages;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.GaugePlugin.Extensions;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Concurrent;
@@ -24,7 +25,7 @@ namespace ReportPortal.GaugePlugin.Results
 
             var conceptReporter = parentReporter.StartChildTestReporter(new StartTestItemRequest
             {
-                Name = request.CurrentExecutionInfo.CurrentStep.Step.ActualStepText,
+                Name = request.CurrentExecutionInfo.CurrentStep.Step.GetStepName(),
                 StartTime = DateTime.UtcNow,
                 HasStats = false
             });

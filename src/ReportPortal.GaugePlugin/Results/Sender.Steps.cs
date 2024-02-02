@@ -23,9 +23,9 @@ namespace ReportPortal.GaugePlugin.Results
 
             var scenarioKey = GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
 
-            var parentReporter = _scenarioConcepts.ContainsKey(scenarioKey) ? _scenarioConcepts[scenarioKey].Last() : _scenarios[scenarioKey];
+            var parentReporter = _scenarioConcepts.TryGetValue(scenarioKey, out System.Collections.Generic.List<ITestReporter> concept) ? concept.Last() : _scenarios[scenarioKey];
 
-            var stepName = stepResult.ProtoItem.Step.GetStepName();
+            var stepName = request.CurrentExecutionInfo.CurrentStep.Step.GetStepName();
 
             #region step parameter
             if (stepResult.ProtoItem.Step.Fragments != null)
