@@ -1,6 +1,7 @@
 ﻿using Gauge.Messages;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.GaugePlugin.Extensions;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Concurrent;
@@ -24,7 +25,7 @@ namespace ReportPortal.GaugePlugin.Results
 
             var parentReporter = _scenarioConcepts.ContainsKey(scenarioKey) ? _scenarioConcepts[scenarioKey].Last() : _scenarios[scenarioKey];
 
-            var stepName = stepResult.ProtoItem.Step.ActualText;
+            var stepName = stepResult.ProtoItem.Step.GetStepName();
 
             #region step parameter
             if (stepResult.ProtoItem.Step.Fragments != null)
