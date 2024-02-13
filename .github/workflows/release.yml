@@ -11,9 +11,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             platform: linux-x64
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             platform: linux-musl-x64
           - os: ubuntu-latest
             platform: linux-arm64
