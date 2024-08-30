@@ -4,6 +4,8 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.IO;
 using System.Linq;
 
 namespace ReportPortal.GaugePlugin.Results
@@ -50,6 +52,9 @@ namespace ReportPortal.GaugePlugin.Results
 
                 if (_launchesCount == 0)
                 {
+                    var launchLogs = Environment.GetEnvironmentVariable("rp_launch_logs") ?? "";
+                    AttachFiles(launchLogs, LogLevel.Error, LaunchReporter);
+
                     _launch.Finish(new FinishLaunchRequest
                     {
                         EndTime = DateTime.UtcNow
@@ -77,6 +82,76 @@ namespace ReportPortal.GaugePlugin.Results
         }
 
         public ILaunchReporter LaunchReporter => _launch;
+
+        private void AttachFiles(String attachPattern, LogLevel logLevel, ILaunchReporter testReporter)
+        {
+            if (string.IsNullOrEmpty(attachPattern)) return;
+
+            var gaugeProjectRoot = Environment.GetEnvironmentVariable("GAUGE_PROJECT_ROOT") ?? Environment.CurrentDirectory;
+            List<string> patterns = attachPattern.Split(',').Select(word => word.Trim()).Where(word => !string.IsNullOrEmpty(word)).ToList();
+
+            foreach (var pattern in patterns) {
+                string[] attachFiles = null;
+                try {
+                    attachFiles = Directory.GetFiles(gaugeProjectRoot, pattern);
+                }
+                catch (Exception exp){
+                    TraceLogger.Error(@$"Pattern '{pattern}' error: {exp}");
+                }
+                foreach (var attachFile in attachFiles) {
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(attachFile))
+                        {
+                            var mimeType = Shared.MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(attachFile));
+                            var name = Path.GetFileName(attachFile);
+
+                            testReporter.Log(new CreateLogItemRequest
+                            {
+                                Time = DateTime.UtcNow,
+                                Level = logLevel,
+                                Text = name,
+                                Attach = new LogItemAttach
+                                {
+                                    Name = name,
+                                    MimeType = mimeType,
+                                    Data = LoadFile(attachFile)
+                                }
+                            });
+                        }
+                    }
+                    catch (Exception exp)
+                    {
+                        TraceLogger.Error(@$"Couldn't attach file: '{attachFile}'. Error: {exp}");
+                    }
+                }
+            }
+        }
+
+        private byte[] LoadFile(String loadFile)
+        {
+            /// Load the file data in a FileStream as FileShare.ReadWrite
+            /// in case the file is still being updated by another process.
+            /// The file must not be locked.
+
+            byte[] data=null;
+            try
+            {
+                using(FileStream fileStream = new FileStream(loadFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using(StreamReader streamReader = new StreamReader(fileStream))
+                    {
+                        var lString = streamReader.ReadToEnd();
+                        data = Encoding.UTF8.GetBytes(lString);
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error(@$"Couldn't open and read file: '{loadFile}'. Error: {exp}");
+            }
+            return data;
+        } 
 
     }
 }
