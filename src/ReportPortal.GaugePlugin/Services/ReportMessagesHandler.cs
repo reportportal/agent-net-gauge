@@ -252,7 +252,7 @@ namespace ReportPortal.GaugePlugin.Services
             }
             finally
             {
-                Program.ShutDownCancelationSource.Cancel();
+                Program.ShutDownCancellationSource.Cancel();
             }
         }
     }
