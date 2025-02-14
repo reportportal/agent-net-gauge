@@ -15,7 +15,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
       - name: Build
         run: dotnet build
 
@@ -47,7 +47,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
           
       - name: Publish
         run: dotnet publish -r ${{ matrix.platform }} --self-contained
