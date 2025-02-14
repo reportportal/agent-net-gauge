@@ -39,9 +39,9 @@ namespace ReportPortal.GaugePlugin.Results
 
             // find TestCaseId
             var testCaseIdTagPrefix = "TestCaseId:";
-            string testCaseIdTagValue = null;
+            string testCaseIdTagValue = null!;
             var testCaseIdTag = scenario.Tags.FirstOrDefault(t => t.ToLowerInvariant().StartsWith(testCaseIdTagPrefix.ToLowerInvariant()));
-            if (testCaseIdTag != null)
+            if (testCaseIdTag is not null)
             {
                 testCaseIdTagValue = testCaseIdTag.Substring(testCaseIdTagPrefix.Length);
             }
@@ -52,11 +52,14 @@ namespace ReportPortal.GaugePlugin.Results
                 .Where(si => si.ItemType == ProtoItem.Types.ItemType.Step && si.Step != null && si.Step.Fragments != null)
                 .SelectMany(si => si.Step.Fragments.Where(f => f.FragmentType == Fragment.Types.FragmentType.Parameter));
 
-            foreach (var scenarioStepFragment in scenarioStepFragments)
+            if (scenarioStepFragments is not null)
             {
-                var paramName = scenarioStepFragment.Parameter.Name;
-                var paramValue = scenarioStepFragment.Parameter.Value;
-                scenarioRequestParameters.Add(new KeyValuePair<string, string>(paramName, paramValue));
+                foreach (var scenarioStepFragment in scenarioStepFragments)
+                {
+                    var paramName = scenarioStepFragment.Parameter.Name;
+                    var paramValue = scenarioStepFragment.Parameter.Value;
+                    scenarioRequestParameters.Add(new KeyValuePair<string, string>(paramName, paramValue));
+                }
             }
 
             var attributes = scenario.Tags.Select(t => new ItemAttributeConverter().ConvertFrom(t, opts => opts.UndefinedKey = "tag")).ToList();

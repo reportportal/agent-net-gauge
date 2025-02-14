@@ -23,7 +23,7 @@ namespace ReportPortal.GaugePlugin.Results
 
             var scenarioKey = GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
 
-            var parentReporter = _scenarioConcepts.TryGetValue(scenarioKey, out System.Collections.Generic.List<ITestReporter> concept) ? concept.Last() : _scenarios[scenarioKey];
+            var parentReporter = _scenarioConcepts.TryGetValue(scenarioKey, out var concept) ? concept.Last() : _scenarios[scenarioKey];
 
             var stepName = request.CurrentExecutionInfo.CurrentStep.Step.GetStepName();
 

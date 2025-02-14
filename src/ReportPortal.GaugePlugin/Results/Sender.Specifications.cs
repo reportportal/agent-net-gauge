@@ -28,7 +28,7 @@ namespace ReportPortal.GaugePlugin.Results
                     // if execution is rerun
                     if (request.CurrentExecutionInfo.ExecutionArgs.Any(arg => arg.FlagName.ToLowerInvariant() == "failed"))
                     {
-                        _startLaunchRequest.IsRerun = true;
+                        _startLaunchRequest!.IsRerun = true;
                     }
 
                     launchReporter.Start(_startLaunchRequest);

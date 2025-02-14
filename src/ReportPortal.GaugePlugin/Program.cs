@@ -13,7 +13,7 @@ namespace ReportPortal.GaugePlugin
 {
     class Program
     {
-        private static ITraceLogger TraceLogger { get; set; }
+        private static ITraceLogger TraceLogger { get; set; } = null!;
 
         public static CancellationTokenSource ShutDownCancellationSource { get; } = new();
 
@@ -23,7 +23,7 @@ namespace ReportPortal.GaugePlugin
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Shared.Extensibility.Embedded.LaunchArtifacts.LaunchArtifactsEventsObserver))]
         static async Task Main(string[] args)
         {
-            var gaugeProjectRoot = Environment.GetEnvironmentVariable("GAUGE_PROJECT_ROOT");
+            var gaugeProjectRoot = Environment.GetEnvironmentVariable("GAUGE_PROJECT_ROOT")!;
             Environment.CurrentDirectory = gaugeProjectRoot;
             var gaugeLogsDir = Environment.GetEnvironmentVariable("logs_directory") ?? "";
 

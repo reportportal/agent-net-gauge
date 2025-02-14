@@ -30,7 +30,7 @@ namespace ReportPortal.GaugePlugin.Results
                 { ExecutionStatus.Skipped, Status.Skipped }
             };
 
-            Shared.Extensibility.Embedded.Analytics.AnalyticsReportEventsObserver.DefineConsumer("agent-dotnet-gauge", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
+            Shared.Extensibility.Embedded.Analytics.AnalyticsReportEventsObserver.DefineConsumer("agent-dotnet-gauge", Assembly.GetExecutingAssembly().GetName().Version!.ToString(3));
         }
 
         public Sender(IClientService service, IConfiguration configuration)
@@ -38,7 +38,7 @@ namespace ReportPortal.GaugePlugin.Results
             _service = service;
             _configuration = configuration;
 
-            _gaugeScreenshotsDir = Environment.GetEnvironmentVariable("gauge_screenshots_dir");
+            _gaugeScreenshotsDir = Environment.GetEnvironmentVariable("gauge_screenshots_dir")!;
         }
     }
 }

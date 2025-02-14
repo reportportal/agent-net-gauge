@@ -230,7 +230,7 @@ namespace ReportPortal.GaugePlugin.Services
 
                     _sender.Sync();
 
-                    Console.WriteLine($"Successfully sent at {_sender.LaunchReporter.Info.Url} Elapsed: {sw.Elapsed}");
+                    Console.WriteLine($"Successfully sent at {_sender.LaunchReporter?.Info.Url} Elapsed: {sw.Elapsed}");
                 }
                 catch (Exception exp)
                 {
@@ -240,7 +240,7 @@ namespace ReportPortal.GaugePlugin.Services
                 {
                     if (_sender != null)
                     {
-                        var statsMessage = _sender.LaunchReporter.StatisticsCounter.ToString();
+                        var statsMessage = _sender.LaunchReporter?.StatisticsCounter.ToString();
 
                         TraceLogger.Info(statsMessage);
 

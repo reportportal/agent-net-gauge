@@ -14,9 +14,9 @@ namespace ReportPortal.GaugePlugin.Results
 
         private int _launchesCount;
 
-        private ILaunchReporter _launch;
+        private ILaunchReporter? _launch;
 
-        private StartLaunchRequest _startLaunchRequest;
+        private StartLaunchRequest? _startLaunchRequest;
 
         public void StartLaunch(ExecutionStartingRequest request)
         {
@@ -48,7 +48,7 @@ namespace ReportPortal.GaugePlugin.Results
             {
                 _launchesCount--;
 
-                if (_launchesCount == 0)
+                if (_launch is not null && _launchesCount == 0)
                 {
                     _launch.Finish(new FinishLaunchRequest
                     {
@@ -76,7 +76,7 @@ namespace ReportPortal.GaugePlugin.Results
             }
         }
 
-        public ILaunchReporter LaunchReporter => _launch;
+        public ILaunchReporter? LaunchReporter => _launch;
 
     }
 }

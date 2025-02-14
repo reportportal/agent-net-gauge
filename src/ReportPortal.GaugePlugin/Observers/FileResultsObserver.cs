@@ -14,7 +14,7 @@ namespace ReportPortal.GaugePlugin.Observers
 
         private void ReportEventsSource_OnAfterLaunchFinished(Shared.Reporter.ILaunchReporter launchReporter, Shared.Extensibility.ReportEvents.EventArgs.AfterLaunchFinishedEventArgs args)
         {
-            File.WriteAllText(Path.Combine(Environment.GetEnvironmentVariable("GAUGE_PROJECT_ROOT"), Environment.GetEnvironmentVariable("logs_directory"), "ReportPortal.Launch.Uuid"), launchReporter.Info.Uuid);
+            File.WriteAllText(Path.Combine(Environment.GetEnvironmentVariable("GAUGE_PROJECT_ROOT")!, Environment.GetEnvironmentVariable("logs_directory")!, "ReportPortal.Launch.Uuid"), launchReporter.Info.Uuid);
         }
     }
 }

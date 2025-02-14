@@ -31,7 +31,9 @@ namespace ReportPortal.GaugePlugin
 
             services.AddSingleton(s =>
             {
-                var factory = s.GetService<ReportPortalApiClientFactory>(); return factory.Create();
+                var factory = s.GetRequiredService<ReportPortalApiClientFactory>();
+                
+                return factory.Create();
             });
 
             services.AddSingleton<Results.Sender>();
@@ -43,7 +45,7 @@ namespace ReportPortal.GaugePlugin
 
             app.UseRouting();
 
-            var rpConfig = app.ApplicationServices.GetService<IConfiguration>();
+            var rpConfig = app.ApplicationServices.GetRequiredService<IConfiguration>();
 
             app.UseEndpoints(endpoints =>
             {
