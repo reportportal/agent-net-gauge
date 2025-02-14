@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReportPortal.GaugePlugin.Services;
 using ReportPortal.Shared.Configuration;
-using ReportPortal.Shared.Configuration.Providers;
 using System;
 using System.Linq;
 

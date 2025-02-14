@@ -16,6 +16,8 @@ namespace ReportPortal.GaugePlugin.Results
 
         public void StartScenario(ScenarioExecutionStartingRequest request)
         {
+            var key = GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
+
             var scenarioResult = request.ScenarioResult.ProtoItem;
 
             ProtoScenario scenario;
@@ -72,9 +74,12 @@ namespace ReportPortal.GaugePlugin.Results
                 Parameters = scenarioRequestParameters
             };
 
-            // parse scenario retry
-            if (request.CurrentExecutionInfo?.ExecutionArgs?.Any(arg => arg.FlagName.Equals("max-retries-count", StringComparison.InvariantCultureIgnoreCase)) == true)
+            // whether the scenario is actually retried
+            if (_scenarios.TryGetValue(key, out var previousTestReporter))
             {
+                // wait until the previous scenario is sent to the server
+                previousTestReporter.Sync();
+
                 startTestItemRequest.IsRetry = true;
             }
 
@@ -106,7 +111,6 @@ namespace ReportPortal.GaugePlugin.Results
                 }
             }
 
-            var key = GetScenarioKey(request.CurrentExecutionInfo, request.CurrentExecutionInfo.CurrentSpec, request.CurrentExecutionInfo.CurrentScenario);
             _scenarios[key] = scenarioReporter;
         }
 
@@ -150,7 +154,11 @@ namespace ReportPortal.GaugePlugin.Results
                 Status = _statusMap[scenarioResult.ProtoItem.Scenario.ExecutionStatus]
             });
 
-            _scenarios.TryRemove(key, out _);
+            // do not remove non-passed scenario, it is an indicator to understand whether scenario might be retried
+            if (!IsRetryContext(request.CurrentExecutionInfo) && scenarioResult.ProtoItem.Scenario.ExecutionStatus == ExecutionStatus.Passed)
+            {
+                _scenarios.TryRemove(key, out _);
+            }
         }
 
         private ScenarioKey GetScenarioKey(ExecutionInfo executionInfo, SpecInfo specInfo, ScenarioInfo scenarioInfo)
@@ -159,5 +167,10 @@ namespace ReportPortal.GaugePlugin.Results
         }
 
         record ScenarioKey(SpecKey SpecKey, string Name);
+
+        private static bool IsRetryContext(ExecutionInfo? executionInfo)
+        {
+            return executionInfo?.ExecutionArgs?.Any(arg => arg.FlagName.Equals("max-retries-count", StringComparison.InvariantCultureIgnoreCase)) is true;
+        }
     }
 }
