@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}
-          path: 'src/ReportPortal.GaugePlugin/bin/Release/net8.0/${{matrix.platform}}/*.zip'
+          path: 'src/ReportPortal.GaugePlugin/bin/Release/net9.0/${{matrix.platform}}/*.zip'
           compression-level: 0
 
   Release:
